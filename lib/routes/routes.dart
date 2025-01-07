@@ -7,4 +7,6 @@ class Routes {
   static String orders = '/orders';
   static String payment = '/payment';
   static String location = '/location';
+  static String search = '/search';
+  static String order_cart = '/order_cart';
 }

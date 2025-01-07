@@ -1,4 +1,4 @@
-import 'package:ecommerc_app/pages/favorite/favorite.dart';
+import 'package:ecommerc_app/helpers/favorite_helper.dart';
 import 'package:ecommerc_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
@@ -13,7 +13,7 @@ class WishListScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.grey.shade100,
         centerTitle: true,
         leading: const Padding(
           padding: EdgeInsets.only(
@@ -21,10 +21,11 @@ class WishListScreen extends StatelessWidget {
           ),
           child: Center(
             child: Text(
-              "RS",
+              "L Y",
               style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w700,
+                fontSize: 30,
+                fontWeight: FontWeight.w900,
+                fontFamily: "Billa",
               ),
             ),
           ),
@@ -32,6 +33,7 @@ class WishListScreen extends StatelessWidget {
         title: SizedBox(
           height: 40,
           child: TextField(
+            readOnly: true,
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 0,
@@ -57,10 +59,18 @@ class WishListScreen extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: SvgPicture.asset(
-              "assets/cart 02.svg",
-              height: 30,
-              width: 30,
+            child: Bounceable(
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  Routes.cart,
+                );
+              },
+              child: SvgPicture.asset(
+                "assets/cart 02.svg",
+                height: 30,
+                width: 30,
+              ),
             ),
           ),
         ],
@@ -70,13 +80,26 @@ class WishListScreen extends StatelessWidget {
           var favoriteProducts = favoritesManager.favorites;
 
           if (favoriteProducts.isEmpty) {
-            return const Center(
-              child: Text(
-                "No favorite items yet!",
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.grey,
-                ),
+            return Container(
+              color: Colors.white,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "assets/shopping-cart-realistic_1284-6011.jpg.avif",
+                    height: 200,
+                    width: 200,
+                  ),
+                  const Center(
+                    child: Text(
+                      "No favorite items yet!",
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             );
           }
@@ -101,6 +124,7 @@ class WishListScreen extends StatelessWidget {
                   );
                 },
                 child: Card(
+                  elevation: 0,
                   color: Colors.white,
                   child: Padding(
                     padding: const EdgeInsets.only(
@@ -118,7 +142,7 @@ class WishListScreen extends StatelessWidget {
                               "http:${product.image}",
                               width: 180,
                               height: 180,
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ),

@@ -1,22 +1,21 @@
 import 'package:ecommerc_app/models/coupons_code.dart';
-import 'package:ecommerc_app/models/product_model.dart';
 import 'package:ecommerc_app/pages/orders/widgets/modal_contact.dart';
 import 'package:ecommerc_app/pages/orders/widgets/modal_coupon.dart';
 import 'package:ecommerc_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 
-class Orders extends StatefulWidget {
-  const Orders({super.key});
+class OrdersCart extends StatefulWidget {
+  const OrdersCart({super.key});
 
   @override
-  State<Orders> createState() => _OrdersState();
+  State<OrdersCart> createState() => _OrdersCartState();
 }
 
-class _OrdersState extends State<Orders> {
+class _OrdersCartState extends State<OrdersCart> {
   late double screenWidth;
   late double screenHeight;
-  int itemCount = 1;
+
   var number = '';
   var coupon = '';
   var location = '';
@@ -25,14 +24,20 @@ class _OrdersState extends State<Orders> {
   Widget build(BuildContext context) {
     var arguments =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-    var product = arguments['product'] as ProductModel;
-    var colornameProduct = arguments['color'] as String;
+    var selectedItems = arguments['selectedItems'];
 
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
 
-    double subtotal = product.priceAsDouble * itemCount;
-    double discount = calculateDiscount(subtotal, coupon);
+    double subtotal = 0.0;
+    double discount = 0.0;
+
+    for (var item in selectedItems) {
+      var product = item['product'];
+      var quantity = item['quantity'];
+      subtotal += product.priceAsDouble * quantity;
+    }
+    discount = calculateDiscount(subtotal, coupon);
     double total = subtotal - discount;
 
     return Scaffold(
@@ -49,6 +54,7 @@ class _OrdersState extends State<Orders> {
         children: [
           Expanded(
             child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 children: [
                   const SizedBox(height: 12),
@@ -69,126 +75,145 @@ class _OrdersState extends State<Orders> {
                     child: _buildPayment(),
                   ),
                   const SizedBox(height: 12),
-                  Container(
-                    color: Colors.white,
-                    height: screenHeight * 0.13,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
+                  ListView.separated(
+                    padding: EdgeInsets.zero,
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    separatorBuilder: (context, index) => Divider(
+                      color: Colors.grey.shade300,
+                      height: 0,
                     ),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 100,
-                          height: double.infinity,
-                          child: Image.network(
-                            "http:${product.image}",
-                            fit: BoxFit.cover,
-                          ),
+                    itemCount: selectedItems.length,
+                    itemBuilder: (context, index) {
+                      var item = selectedItems[index];
+                      var product = item['product'];
+                      var quantity = item['quantity'];
+                      var color = item['color'];
+
+                      return Container(
+                        color: Colors.white,
+                        height: screenHeight * 0.13,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                product.name,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 100,
+                              height: double.infinity,
+                              child: Image.network(
+                                "http:${product.image}",
+                                fit: BoxFit.cover,
                               ),
-                              Text(
-                                "USD ${product.priceSign}${product.price}",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.red,
-                                ),
-                              ),
-                              Text(
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                "Color: $colornameProduct",
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 100,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Row(
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        itemCount++;
-                                      });
-                                    },
-                                    child: Container(
-                                      width: 25,
-                                      height: 25,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Colors.black,
-                                          width: 1,
-                                        ),
-                                      ),
-                                      child: const Center(
-                                        child: Text("+"),
-                                      ),
+                                  Text(
+                                    product.name,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
                                     ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  GestureDetector(
-                                    onTap: () {},
-                                    child: Container(
-                                      width: 25,
-                                      height: 25,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Colors.black,
-                                          width: 1,
-                                        ),
-                                      ),
-                                      child: Center(child: Text("$itemCount")),
-                                    ),
+                                  Text(
+                                    "USD ${product.priceSign}${product.price}",
+                                    style: const TextStyle(fontSize: 14),
                                   ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(
-                                        () {
-                                          if (itemCount > 1) {
-                                            itemCount--;
-                                          }
-                                        },
-                                      );
-                                    },
-                                    child: Container(
-                                      width: 25,
-                                      height: 25,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Colors.black,
-                                          width: 1,
-                                        ),
-                                      ),
-                                      child: const Center(
-                                        child: Text("-"),
-                                      ),
-                                    ),
+                                  Text(
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    "Color: $color",
+                                    style: const TextStyle(fontSize: 14),
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
+                            ),
+                            SizedBox(
+                              height: 100,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Row(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedItems[index]['quantity']++;
+                                          });
+                                        },
+                                        child: Container(
+                                          width: 25,
+                                          height: 25,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: Colors.black,
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: const Center(
+                                            child: Text("+"),
+                                          ),
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {},
+                                        child: Container(
+                                          width: 25,
+                                          height: 25,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: Colors.black,
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child:
+                                              Center(child: Text("$quantity")),
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(
+                                            () {
+                                              if (selectedItems[index]
+                                                      ['quantity'] >
+                                                  1) {
+                                                selectedItems[index]
+                                                    ['quantity']--;
+                                              }
+                                            },
+                                          );
+                                        },
+                                        child: Container(
+                                          width: 25,
+                                          height: 25,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: Colors.black,
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: const Center(
+                                            child: Text("-"),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 12),
                   Bounceable(
@@ -196,7 +221,7 @@ class _OrdersState extends State<Orders> {
                     child: _buildCoupon(),
                   ),
                   const SizedBox(height: 12),
-                  _buildOrderSummary(subtotal, discount, total),
+                  _buildOrderSummary(subtotal, discount, total, selectedItems),
                 ],
               ),
             ),
@@ -303,7 +328,11 @@ class _OrdersState extends State<Orders> {
     );
   }
 
-  Widget _buildOrderSummary(double subtotal, double discount, double total) {
+  Widget _buildOrderSummary(double subtotal, double discount, double total,
+      List<dynamic> selectedItems) {
+    int totalItems =
+        selectedItems.fold(0, (sum, item) => sum + item['quantity'] as int);
+
     return Container(
       color: Colors.white,
       padding: EdgeInsets.only(bottom: screenHeight * 0.03),
@@ -325,7 +354,7 @@ class _OrdersState extends State<Orders> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Order Summary ($itemCount item)"),
+                      Text("Order Summary ($totalItems items)"),
                     ],
                   ),
                 ),

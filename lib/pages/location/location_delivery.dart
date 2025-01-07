@@ -110,32 +110,21 @@ class _LocationDeliveryState extends State<LocationDelivery> {
                   top: 16,
                   left: 16,
                   right: 16,
+                  bottom: 16,
                 ),
                 child: SafeArea(
                   top: false,
                   child: Column(
                     children: [
                       Center(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(
-                              Icons.location_on_rounded,
-                              color: Colors.red,
-                              size: 24,
-                            ),
-                            Expanded(
-                              child: Text(
-                                address,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          "📍$address",
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 8),

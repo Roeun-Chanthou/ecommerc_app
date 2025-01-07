@@ -20,28 +20,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic> selectedProductType = productType[0];
   var scrollController = ScrollController();
-
-  var searchController = TextEditingController();
-  List<Map<String, dynamic>> filtterItems = [];
-  bool isSearchClick = false;
-
   List<Map<String, dynamic>> cart = [];
-
-  @override
-  void initState() {
-    super.initState();
-    filtterItems = products;
-    searchController.addListener(filtterData);
-  }
-
-  void filtterData() {
-    setState(() {
-      final query = searchController.text.toLowerCase();
-      filtterItems = products
-          .where((item) => item['name'].toLowerCase().contains(query))
-          .toList();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverAppBar(
             pinned: true,
             forceElevated: true,
+            floating: true, // Add this line
+            snap: true,
             backgroundColor: Colors.white,
             centerTitle: true,
             leading: const Padding(
@@ -62,10 +43,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: Center(
                 child: Text(
-                  "RS",
+                  "L Y",
                   style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w900,
+                    fontFamily: "Billa",
                   ),
                 ),
               ),
@@ -81,7 +63,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: SizedBox(
                     height: 40,
                     child: TextField(
-                      controller: searchController,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          Routes.search,
+                        );
+                      },
+                      readOnly: true,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.symmetric(
                           vertical: 0,
@@ -289,8 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 (BuildContext context, int index) {
                   var item = products[index];
                   var product = ProductModel.fromJson(item);
-                  var searchItem = filtterItems[index];
-                  var productFiltter = ProductModel.fromJson(searchItem);
+
                   return GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(
@@ -300,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                     child: Card(
-                      elevation: 6,
+                      elevation: 1,
                       shadowColor: Colors.grey,
                       child: Container(
                         decoration: BoxDecoration(
@@ -315,41 +302,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Center(
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Image(
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return const Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text("No Image"),
-                                        ],
-                                      );
-                                    },
-                                    loadingBuilder:
-                                        (context, child, loadingProgress) {
-                                      if (loadingProgress == null) {
-                                        return child;
-                                      }
-                                      return Shimmer.fromColors(
-                                        baseColor: Colors.grey[300]!,
-                                        highlightColor: Colors.grey[100]!,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[300],
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                    image: isSearchClick
-                                        ? NetworkImage(
-                                            "http:${product.image}",
-                                          )
-                                        : NetworkImage(
-                                            "http:${productFiltter.image}",
-                                          ),
-                                    fit: BoxFit.cover,
+                                  child: Hero(
+                                    tag: product.image,
+                                    child: Image(
+                                      image: NetworkImage(
+                                        "http:${product.image}",
+                                      ),
+                                      fit: BoxFit.contain,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -360,9 +320,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 vertical: 5,
                               ),
                               child: Text(
-                                isSearchClick
-                                    ? product.name
-                                    : productFiltter.name,
+                                product.name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
@@ -375,9 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
                               child: Text(
-                                isSearchClick
-                                    ? product.description
-                                    : productFiltter.description,
+                                product.description,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
@@ -392,9 +348,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 vertical: 5,
                               ),
                               child: Text(
-                                isSearchClick
-                                    ? "Price: ${product.priceSign}${product.price}"
-                                    : "Price: ${productFiltter.priceSign}${productFiltter.price}",
+                                "Price: ${product.priceSign}${product.price}",
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
@@ -409,8 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   );
                 },
-                childCount:
-                    isSearchClick ? products.length : filtterItems.length,
+                childCount: products.length,
               ),
             ),
           ),

@@ -72,7 +72,9 @@ class _ContactOptionModalState extends State<ContactOptionModal> {
               vertical: 12,
             ),
             child: TextField(
+              autofocus: true,
               controller: txtNumber,
+              keyboardType: TextInputType.phone,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.symmetric(

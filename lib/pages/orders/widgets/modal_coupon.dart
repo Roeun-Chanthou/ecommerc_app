@@ -72,6 +72,7 @@ class _CouponOptionModalState extends State<CouponOptionModal> {
               vertical: 12,
             ),
             child: TextField(
+              autofocus: true,
               controller: txtCoupon,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),

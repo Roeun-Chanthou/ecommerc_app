@@ -1,4 +1,6 @@
+import 'package:ecommerc_app/routes/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_svg/svg.dart';
 
 class Setting extends StatefulWidget {
@@ -28,10 +30,18 @@ class _SettingState extends State<Setting> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: SvgPicture.asset(
-              "assets/cart 02.svg",
-              height: 30,
-              width: 30,
+            child: Bounceable(
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  Routes.cart,
+                );
+              },
+              child: SvgPicture.asset(
+                "assets/cart 02.svg",
+                height: 30,
+                width: 30,
+              ),
             ),
           ),
         ],
@@ -48,7 +58,6 @@ class _SettingState extends State<Setting> {
             Container(
               color: Colors.white,
               width: screenWidth,
-              // height: screenHeight * 0.1,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               child: Row(
                 children: [
@@ -63,10 +72,11 @@ class _SettingState extends State<Setting> {
                     ),
                     child: const Center(
                       child: Text(
-                        "S D",
+                        "L Y",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
+                          fontFamily: "Billa",
                         ),
                       ),
                     ),
@@ -77,7 +87,7 @@ class _SettingState extends State<Setting> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "SOK DARA",
+                        "LY HOU",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -87,7 +97,7 @@ class _SettingState extends State<Setting> {
                         height: 5,
                       ),
                       Text(
-                        "21 Octomber",
+                        "14 January",
                         style: TextStyle(
                           fontSize: 15,
                         ),
