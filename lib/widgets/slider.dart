@@ -1,6 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:ecommerc_app/models/slide.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bounceable/flutter_bounceable.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class SliderBanner extends StatefulWidget {
@@ -19,19 +21,30 @@ class _SliderBannerState extends State<SliderBanner> {
       padding: const EdgeInsets.symmetric(
         vertical: 16,
       ),
-      height: 220,
+      height: MediaQuery.of(context).size.height * 0.25,
       child: Column(
         children: [
           CarouselSlider(
             items: slidesCarousel.map(
               (slide) {
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        slide,
+                return Bounceable(
+                  scaleFactor: 0.5,
+                  onTap: () {},
+                  child: Container(
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      image: DecorationImage(
+                        image: NetworkImage(
+                          slide,
+                        ),
+                        fit: BoxFit.cover,
                       ),
+                    ),
+                    child: Image(
+                      loadingBuilder: _buildLoadingShimmer,
+                      image: NetworkImage(slide),
+                      width: double.infinity,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -60,6 +73,23 @@ class _SliderBannerState extends State<SliderBanner> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingShimmer(
+      BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+    if (loadingProgress == null) return child;
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: BorderRadius.circular(20),
+        ),
       ),
     );
   }

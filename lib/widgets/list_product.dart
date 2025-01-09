@@ -2,7 +2,7 @@ import 'package:ecommerc_app/models/product_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../data/product_type _sliver.dart';
+import '../data/product_type.dart';
 
 class ListProduct extends StatelessWidget {
   const ListProduct({super.key});

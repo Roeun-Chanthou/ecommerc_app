@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../models/product_model.dart';
 import '../../routes/routes.dart';
@@ -61,6 +62,7 @@ class Category extends StatelessWidget {
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Image(
+                                  loadingBuilder: _buildLoadingShimmer,
                                   image: NetworkImage("http:${product.image}"),
                                   fit: BoxFit.cover,
                                 ),
@@ -116,6 +118,23 @@ class Category extends StatelessWidget {
                 );
               },
             ),
+    );
+  }
+
+  Widget _buildLoadingShimmer(
+      BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+    if (loadingProgress == null) return child;
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
     );
   }
 }

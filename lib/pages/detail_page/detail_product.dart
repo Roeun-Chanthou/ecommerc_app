@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class DetailProduct extends StatefulWidget {
   const DetailProduct({super.key});
@@ -195,10 +196,12 @@ class _DetailProductState extends State<DetailProduct> {
                       key: imageGlobalKey,
                       color: Colors.white,
                       height: screenHeight * 0.35,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       width: double.infinity,
                       child: Hero(
                         tag: productDS.image,
                         child: Image.network(
+                          loadingBuilder: _buildLoadingShimmer,
                           "http:${productDS.image}",
                           fit: BoxFit.contain,
                         ),
@@ -391,6 +394,23 @@ class _DetailProductState extends State<DetailProduct> {
                       .toList(),
                 ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingShimmer(
+      BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+    if (loadingProgress == null) return child;
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: BorderRadius.circular(20),
+        ),
       ),
     );
   }

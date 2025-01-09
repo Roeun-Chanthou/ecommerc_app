@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class WishListScreen extends StatelessWidget {
   const WishListScreen({super.key});
@@ -34,6 +35,12 @@ class WishListScreen extends StatelessWidget {
           height: 40,
           child: TextField(
             readOnly: true,
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                Routes.search,
+              );
+            },
             decoration: InputDecoration(
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 0,
@@ -139,6 +146,7 @@ class WishListScreen extends StatelessWidget {
                         Expanded(
                           child: Center(
                             child: Image.network(
+                              loadingBuilder: _buildLoadingShimmer,
                               "http:${product.image}",
                               width: 180,
                               height: 180,
@@ -165,6 +173,23 @@ class WishListScreen extends StatelessWidget {
             },
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildLoadingShimmer(
+      BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+    if (loadingProgress == null) return child;
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: BorderRadius.circular(20),
+        ),
       ),
     );
   }

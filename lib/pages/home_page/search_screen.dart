@@ -2,8 +2,9 @@ import 'package:ecommerc_app/models/product_model.dart';
 import 'package:ecommerc_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
+import 'package:shimmer/shimmer.dart';
 
-import '../../data/product_sliver.dart';
+import '../../data/product_model.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -53,20 +54,24 @@ class _SearchScreenState extends State<SearchScreen> {
                 Icons.search,
                 color: Colors.grey,
               ),
+              suffixIcon: const Icon(
+                Icons.keyboard_voice_outlined,
+                color: Colors.grey,
+              ),
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 0,
                 horizontal: 16,
               ),
               border: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.black),
+                borderSide: BorderSide(color: Colors.grey.shade600),
                 borderRadius: BorderRadius.circular(15),
               ),
               enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.black),
+                borderSide: BorderSide(color: Colors.grey.shade600),
                 borderRadius: BorderRadius.circular(15),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.black),
+                borderSide: BorderSide(color: Colors.grey.shade600),
                 borderRadius: BorderRadius.circular(15),
               ),
               hintText: "Search product",
@@ -105,6 +110,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Image.network(
+                                loadingBuilder: _buildLoadingShimmer,
                                 "http:${productFiltter.image}",
                                 height: 100,
                                 width: 100,
@@ -160,19 +166,60 @@ class _SearchScreenState extends State<SearchScreen> {
                     );
                   },
                 )
-              : const Center(
-                  child: Text(
-                    "Search not found",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      height: 10,
                     ),
-                  ),
+                    Center(
+                      child: Image(
+                        loadingBuilder: _buildLoadingShimmerNotFound,
+                        image: const NetworkImage(
+                          "https://thumbs.dreamstime.com/b/no-found-symbol-unsuccessful-search-vecotr-upset-magnifying-glass-cute-not-zoom-icon-suitable-results-oops-page-failure-122786031.jpg",
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Center(
+                      child: Image(
+                        loadingBuilder: _buildLoadingShimmerNotFound,
+                        image: const NetworkImage(
+                          "https://thumbs.dreamstime.com/b/no-found-symbol-unsuccessful-search-vecotr-upset-magnifying-glass-cute-not-zoom-icon-suitable-results-oops-page-failure-122786031.jpg",
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Center(
+                      child: Image(
+                        loadingBuilder: _buildLoadingShimmerNotFound,
+                        image: const NetworkImage(
+                          "https://thumbs.dreamstime.com/b/no-found-symbol-unsuccessful-search-vecotr-upset-magnifying-glass-cute-not-zoom-icon-suitable-results-oops-page-failure-122786031.jpg",
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    const Text(
+                      "search products not found",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
                 ))
           : Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Image.asset(
                     "assets/image.png",
@@ -191,6 +238,40 @@ class _SearchScreenState extends State<SearchScreen> {
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildLoadingShimmerNotFound(
+      BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+    if (loadingProgress == null) {}
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.7,
+        height: MediaQuery.of(context).size.height * 0.05,
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingShimmer(
+      BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+    if (loadingProgress == null) return child;
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Container(
+        width: 100,
+        height: 100,
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
     );
   }
 }

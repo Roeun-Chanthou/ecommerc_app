@@ -27,7 +27,7 @@ class _MainScreenState extends State<MainScreen> {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(
-          bottom: 40,
+          bottom: 30,
           left: 20,
           right: 20,
           top: 10,
@@ -39,21 +39,21 @@ class _MainScreenState extends State<MainScreen> {
             });
           },
           tabBorderRadius: 15,
-          curve: Curves.easeIn,
-          duration: const Duration(milliseconds: 900),
+          curve: Curves.linearToEaseOut,
+          duration: const Duration(milliseconds: 600),
           gap: 6,
           color: Colors.grey[800],
           activeColor: Colors.black,
           iconSize: 20,
+          style: GnavStyle.google,
           tabBackgroundColor: Colors.purple.withOpacity(0.1),
           padding: const EdgeInsets.symmetric(
             horizontal: 20,
-            vertical: 5,
+            vertical: 10,
           ),
           tabs: [
             GButton(
               icon: Icons.home,
-              iconColor: Colors.white,
               leading: currentIndex == 0
                   ? SvgPicture.asset(
                       "assets/home_solid.svg",

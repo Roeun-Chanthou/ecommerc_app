@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MyCart extends StatefulWidget {
   const MyCart({super.key});
@@ -200,7 +201,9 @@ class _MyCartState extends State<MyCart> {
                           children: [
                             SizedBox(
                               height: 100,
+                              width: 100,
                               child: Image.network(
+                                loadingBuilder: _buildLoadingShimmer,
                                 "http:${product.image}",
                                 fit: BoxFit.contain,
                                 errorBuilder: (context, error, stackTrace) {
@@ -307,7 +310,9 @@ class _MyCartState extends State<MyCart> {
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          _decreaseQuantity(index);
+                                          if (quantity > 1) {
+                                            _decreaseQuantity(index);
+                                          }
                                         },
                                         child: Container(
                                           width: 25,
@@ -344,6 +349,23 @@ class _MyCartState extends State<MyCart> {
                 width: 300,
               ),
             ),
+    );
+  }
+
+  Widget _buildLoadingShimmer(
+      BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+    if (loadingProgress == null) return child;
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Container(
+        width: 100,
+        height: 100,
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
     );
   }
 

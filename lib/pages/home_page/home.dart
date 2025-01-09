@@ -1,4 +1,4 @@
-import 'package:ecommerc_app/data/product_sliver.dart';
+import 'package:ecommerc_app/data/product_model.dart';
 import 'package:ecommerc_app/models/product_model.dart';
 import 'package:ecommerc_app/routes/routes.dart';
 import 'package:ecommerc_app/widgets/slider.dart';
@@ -7,7 +7,7 @@ import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../data/product_type _sliver.dart';
+import '../../data/product_type.dart';
 import '../../models/product_type.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverAppBar(
             pinned: true,
             forceElevated: true,
-            floating: true, // Add this line
+            floating: true,
             snap: true,
             backgroundColor: Colors.white,
             centerTitle: true,
@@ -192,15 +192,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                   },
                                   child: SvgPicture.network(
                                     product.image,
+                                    fit: BoxFit.cover,
                                     placeholderBuilder: (context) {
                                       return Shimmer.fromColors(
-                                        baseColor: Colors.grey[300]!,
-                                        highlightColor: Colors.grey[100]!,
+                                        baseColor: Colors.grey.shade300,
+                                        highlightColor: Colors.grey.shade100,
                                         child: Container(
                                           width: 80,
                                           height: 80,
                                           decoration: BoxDecoration(
-                                            color: Colors.grey[300],
+                                            color: Colors.grey[400],
                                             borderRadius:
                                                 BorderRadius.circular(20),
                                           ),
@@ -209,8 +210,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     },
                                     width: 80,
                                     height: 80,
-                                    colorFilter: const ColorFilter.mode(
-                                      Colors.black,
+                                    colorFilter: ColorFilter.mode(
+                                      Colors.grey.shade900,
                                       BlendMode.srcIn,
                                     ),
                                   ),
@@ -305,6 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Hero(
                                     tag: product.image,
                                     child: Image(
+                                      loadingBuilder: _buildLoadingShimmer,
                                       image: NetworkImage(
                                         "http:${product.image}",
                                       ),
@@ -368,6 +370,23 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingShimmer(
+      BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+    if (loadingProgress == null) return child;
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade300,
+          borderRadius: BorderRadius.circular(20),
+        ),
       ),
     );
   }
