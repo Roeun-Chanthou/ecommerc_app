@@ -37,17 +37,24 @@ class _HomeScreenState extends State<HomeScreen> {
             snap: true,
             backgroundColor: Colors.white,
             centerTitle: true,
-            leading: const Padding(
-              padding: EdgeInsets.only(
+            flexibleSpace: Container(
+              color: Colors.white,
+            ),
+            leading: Padding(
+              padding: const EdgeInsets.only(
                 left: 10,
               ),
               child: Center(
-                child: Text(
-                  "L Y",
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w900,
-                    fontFamily: "Billa",
+                child: Bounceable(
+                  scaleFactor: 0.5,
+                  onTap: () {},
+                  child: const Text(
+                    "L Y",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: "Billa",
+                    ),
                   ),
                 ),
               ),
@@ -287,80 +294,75 @@ class _HomeScreenState extends State<HomeScreen> {
                         arguments: product,
                       );
                     },
-                    child: Card(
-                      elevation: 1,
-                      shadowColor: Colors.grey,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Hero(
-                                    tag: product.image,
-                                    child: Image(
-                                      loadingBuilder: _buildLoadingShimmer,
-                                      image: NetworkImage(
-                                        "http:${product.image}",
-                                      ),
-                                      fit: BoxFit.contain,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Hero(
+                                  tag: product.image,
+                                  child: Image(
+                                    loadingBuilder: _buildLoadingShimmer,
+                                    image: NetworkImage(
+                                      "http:${product.image}",
                                     ),
+                                    fit: BoxFit.contain,
                                   ),
                                 ),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 5,
-                              ),
-                              child: Text(
-                                product.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            child: Text(
+                              product.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(
-                                product.description,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.grey[600],
-                                ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Text(
+                              product.description,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.grey[600],
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 5,
-                              ),
-                              child: Text(
-                                "Price: ${product.priceSign}${product.price}",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.red,
-                                ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            child: Text(
+                              "Price: ${product.priceSign}${product.price}",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.red,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   );

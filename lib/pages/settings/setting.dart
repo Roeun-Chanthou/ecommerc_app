@@ -19,6 +19,7 @@ class _SettingState extends State<Setting> {
     screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         centerTitle: false,
         title: const Text(
           'Setting',

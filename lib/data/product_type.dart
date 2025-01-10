@@ -2,10 +2,12 @@ var productType = [
   {
     "title": "Blush",
     "tag": "blush",
+    "image":
+        "https://makeup-api.herokuapp.com/assets/eyeshadow-67f9f8fd19df1862c95122f9b3460c7e6674d5a6d178cde00e6e4be908dd898a.svg",
     // "image":
     //     "https://www.svgrepo.com/show/137538/make-up-brushes-for-blush-and-lipstick.svg",
-        "image":
-        "https://makeup-api.herokuapp.com/assets/blush-ff7992c3d7690d18a9b0224177cfbdedbc036497cf87c393ec01c6a2ef070258.svg",
+        // "image":
+        // "https://makeup-api.herokuapp.com/assets/blush-ff7992c3d7690d18a9b0224177cfbdedbc036497cf87c393ec01c6a2ef070258.svg",
   },
   {
     "title": "Bronzer",

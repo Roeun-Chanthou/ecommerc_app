@@ -415,9 +415,7 @@ class _OrdersCartState extends State<OrdersCart> {
   }
 
   void showModalNumberClick() async {
-    var result = await ContactNumberModalDailog.show(
-      context,
-    );
+    var result = await ContactNumberModalDailog.show(context, number);
     if (result is String) {
       setState(() {
         number = result;
@@ -426,9 +424,7 @@ class _OrdersCartState extends State<OrdersCart> {
   }
 
   void showModalCouponClick() async {
-    var result = await CouponModalDailog.show(
-      context,
-    );
+    var result = await CouponModalDailog.show(context, coupon);
     if (result is String) {
       setState(() {
         coupon = result;

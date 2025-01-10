@@ -18,7 +18,7 @@ class _OrdersState extends State<Orders> {
   late double screenHeight;
   int itemCount = 1;
   var number = '';
-  var coupon = '';
+  String coupon = '';
   var location = '';
 
   @override
@@ -215,6 +215,7 @@ class _OrdersState extends State<Orders> {
     if (selectedCoupon.isNotEmpty) {
       return subtotal * (selectedCoupon['value'] / 100);
     }
+
     return 0.0;
   }
 
@@ -386,9 +387,7 @@ class _OrdersState extends State<Orders> {
   }
 
   void showModalNumberClick() async {
-    var result = await ContactNumberModalDailog.show(
-      context,
-    );
+    var result = await ContactNumberModalDailog.show(context, number);
     if (result is String) {
       setState(() {
         number = result;
@@ -397,9 +396,7 @@ class _OrdersState extends State<Orders> {
   }
 
   void showModalCouponClick() async {
-    var result = await CouponModalDailog.show(
-      context,
-    );
+    var result = await CouponModalDailog.show(context, coupon);
     if (result is String) {
       setState(() {
         coupon = result;

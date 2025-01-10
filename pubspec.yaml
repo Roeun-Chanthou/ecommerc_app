@@ -50,6 +50,9 @@ dependencies:
   badges: ^3.1.2
   flutter_icon_snackbar: ^1.2.1
   google_nav_bar: ^5.0.7
+  another_flutter_splash_screen: ^1.2.1
+  flutter_no_internet_widget: ^1.0.0+18-dev.1
+  connectivity_plus: ^3.0.6
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +80,7 @@ flutter:
   assets:
     - assets/
     - assets/debit/
+    - assets/icons/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

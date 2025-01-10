@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -141,6 +142,15 @@ class _LocationDeliveryState extends State<LocationDelivery> {
                         ),
                         onPressed: () {
                           Navigator.pop(context, address);
+                          IconSnackBar.show(
+                            context,
+                            snackBarType: SnackBarType.success,
+                            label: "Save your location for delivery",
+                            labelTextStyle: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          );
                         },
                         child: const Text(
                           "SELECT THIS LOCATION",

@@ -1,10 +1,13 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 
 class ContactNumberModalDailog {
   ContactNumberModalDailog._();
 
   static Future show(
     BuildContext context,
+    String contactNumber,
   ) {
     return showModalBottomSheet(
       isScrollControlled: true,
@@ -15,16 +18,21 @@ class ContactNumberModalDailog {
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-          child: const ContactOptionModal(),
+          child: ContactOptionModal(
+            contackNumber: contactNumber,
+          ),
         );
       },
     );
   }
 }
 
+// ignore: must_be_immutable
 class ContactOptionModal extends StatefulWidget {
-  const ContactOptionModal({
+  String contackNumber;
+  ContactOptionModal({
     super.key,
+    required this.contackNumber,
   });
 
   @override
@@ -36,6 +44,7 @@ class _ContactOptionModalState extends State<ContactOptionModal> {
 
   @override
   Widget build(BuildContext context) {
+    txtNumber.text = widget.contackNumber;
     return Container(
       height: 220,
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -98,7 +107,29 @@ class _ContactOptionModalState extends State<ContactOptionModal> {
                 minimumSize: const Size(0, 50),
               ),
               onPressed: () {
-                setState(() {});
+                setState(() {
+                  if (txtNumber.text.isEmpty) {
+                    IconSnackBar.show(
+                      context,
+                      snackBarType: SnackBarType.alert,
+                      label: "Please enter your contact number",
+                      labelTextStyle: const TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                    );
+                  } else {
+                    IconSnackBar.show(
+                      context,
+                      snackBarType: SnackBarType.success,
+                      label: "Saved your Phone Number",
+                      labelTextStyle: const TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                    );
+                  }
+                });
                 Navigator.pop(
                   context,
                   txtNumber.text,

@@ -12,56 +12,71 @@ class WishListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.grey.shade100,
+        backgroundColor: Colors.white,
         centerTitle: true,
-        leading: const Padding(
-          padding: EdgeInsets.only(
+        leading: Padding(
+          padding: const EdgeInsets.only(
             left: 10,
           ),
           child: Center(
-            child: Text(
-              "L Y",
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.w900,
-                fontFamily: "Billa",
+            child: Bounceable(
+              scaleFactor: 0.5,
+              onTap: () {},
+              child: const Text(
+                "L Y",
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.w900,
+                  fontFamily: "Billa",
+                ),
               ),
             ),
           ),
         ),
-        title: SizedBox(
-          height: 40,
-          child: TextField(
-            readOnly: true,
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                Routes.search,
-              );
-            },
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 0,
-                horizontal: 16,
-              ),
-              border: const OutlineInputBorder(
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: const OutlineInputBorder(
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide.none,
-              ),
-              hintText: "Search anything you like",
-              hintStyle: TextStyle(
-                fontSize: 18,
-                color: Colors.grey[500],
+        title: Row(
+          children: [
+            Container(
+              width: 1,
+              height: 30,
+              color: Colors.grey,
+            ),
+            Expanded(
+              child: SizedBox(
+                height: 40,
+                child: TextField(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      Routes.search,
+                    );
+                  },
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: 16,
+                    ),
+                    border: const OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                    ),
+                    hintText: "Search anything you like",
+                    hintStyle: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
+          ],
         ),
         actions: [
           Padding(
@@ -93,9 +108,10 @@ class WishListScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    "assets/shopping-cart-realistic_1284-6011.jpg.avif",
+                    "assets/icons/favorite.jpg",
                     height: 200,
                     width: 200,
+                    colorBlendMode: BlendMode.color,
                   ),
                   const Center(
                     child: Text(
@@ -130,43 +146,39 @@ class WishListScreen extends StatelessWidget {
                     arguments: product,
                   );
                 },
-                child: Card(
-                  elevation: 0,
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 16,
-                      top: 10,
-                      right: 16,
-                      bottom: 10,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Center(
-                            child: Image.network(
-                              loadingBuilder: _buildLoadingShimmer,
-                              "http:${product.image}",
-                              width: 180,
-                              height: 180,
-                              fit: BoxFit.contain,
-                            ),
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    top: 10,
+                    right: 16,
+                    bottom: 10,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: Image.network(
+                            loadingBuilder: _buildLoadingShimmer,
+                            "http:${product.image}",
+                            width: 180,
+                            height: 180,
+                            fit: BoxFit.contain,
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        Text(
-                          product.name,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          "Price: ${product.priceSign}${product.price}",
-                          style: const TextStyle(color: Colors.red),
-                        ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        product.name,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        "Price: ${product.priceSign}${product.price}",
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ],
                   ),
                 ),
               );

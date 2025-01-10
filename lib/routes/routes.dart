@@ -1,5 +1,6 @@
 class Routes {
   Routes._();
+  static const String splashscreen = '/splashscreen';
   static String detailScreen = '/detail';
   static String mainScreen = '/mainScreen';
   static String category = '/category';
@@ -8,5 +9,5 @@ class Routes {
   static String payment = '/payment';
   static String location = '/location';
   static String search = '/search';
-  static String order_cart = '/order_cart';
+  static String ordercart = '/order_cart';
 }

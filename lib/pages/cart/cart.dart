@@ -143,7 +143,7 @@ class _MyCartState extends State<MyCart> {
 
     Navigator.pushNamed(
       context,
-      Routes.order_cart,
+      Routes.ordercart,
       arguments: {
         'selectedItems': selectedItems,
       },
@@ -178,12 +178,19 @@ class _MyCartState extends State<MyCart> {
       body: cart.isNotEmpty
           ? Column(
               children: [
-                const Divider(height: 1),
+                Divider(
+                  height: 1,
+                  color: Colors.grey.shade300,
+                ),
                 Expanded(
                   child: ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     itemCount: cart.length,
                     separatorBuilder: (context, index) {
-                      return const Divider(height: 1);
+                      return Divider(
+                        height: 0,
+                        color: Colors.grey.shade300,
+                      );
                     },
                     itemBuilder: (context, index) {
                       var cartItem = cart[index];
@@ -250,7 +257,8 @@ class _MyCartState extends State<MyCart> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  GestureDetector(
+                                  Bounceable(
+                                    scaleFactor: 0.5,
                                     onTap: () {
                                       _toggleSelection(index);
                                     },
@@ -342,11 +350,26 @@ class _MyCartState extends State<MyCart> {
                 _buildBottomPlace(total),
               ],
             )
-          : Center(
-              child: Image.asset(
-                "assets/empty-shopping-basket-concept-illustration_114360-29795.jpg",
-                height: 300,
-                width: 300,
+          : SafeArea(
+              bottom: true,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/icons/empty_cart.jpg",
+                      height: 250,
+                      width: 250,
+                    ),
+                    Text(
+                      "Empty Product",
+                      style: TextStyle(
+                        fontSize: 28,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
     );
