@@ -151,13 +151,13 @@ class _SearchScreenState extends State<SearchScreen> {
               ? (filteredItems.isNotEmpty
                   ? ListView.separated(
                       separatorBuilder: (context, index) {
-                        return Divider(
-                          height: 0,
-                          color: Colors.grey.shade300,
+                        return Container(
+                          height: 10,
+                          color: Colors.grey.shade200,
                         );
                       },
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
+                        // horizontal: 16,
                         vertical: 10,
                       ),
                       itemCount: filteredItems.length,
@@ -175,16 +175,22 @@ class _SearchScreenState extends State<SearchScreen> {
                           child: Container(
                             color: Colors.white,
                             child: Padding(
-                              padding: const EdgeInsets.all(12.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 10,
+                              ),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Image.network(
-                                    loadingBuilder: _buildLoadingShimmer,
-                                    "http:${productFiltered.image}",
-                                    height: 100,
-                                    width: 100,
-                                    fit: BoxFit.contain,
+                                  Hero(
+                                    tag: productFiltered.image,
+                                    child: Image.network(
+                                      loadingBuilder: _buildLoadingShimmer,
+                                      "http:${productFiltered.image}",
+                                      height: 100,
+                                      width: 100,
+                                      fit: BoxFit.contain,
+                                    ),
                                   ),
                                   const SizedBox(width: 10),
                                   Expanded(

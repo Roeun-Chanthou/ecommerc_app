@@ -158,6 +158,7 @@ class _MyCartState extends State<MyCart> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        forceMaterialTransparency: true,
         backgroundColor: Colors.white,
         title: const Text("Cart"),
         actions: [
@@ -178,18 +179,13 @@ class _MyCartState extends State<MyCart> {
       body: cart.isNotEmpty
           ? Column(
               children: [
-                Divider(
-                  height: 1,
-                  color: Colors.grey.shade300,
-                ),
                 Expanded(
                   child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     itemCount: cart.length,
                     separatorBuilder: (context, index) {
-                      return Divider(
-                        height: 0,
-                        color: Colors.grey.shade300,
+                      return Container(
+                        height: 10,
+                        color: Colors.grey.shade200,
                       );
                     },
                     itemBuilder: (context, index) {

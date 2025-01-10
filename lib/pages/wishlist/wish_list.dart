@@ -14,6 +14,7 @@ class WishListScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        forceMaterialTransparency: true,
         backgroundColor: Colors.white,
         centerTitle: true,
         leading: Padding(
@@ -148,37 +149,51 @@ class WishListScreen extends StatelessWidget {
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(
-                    left: 16,
                     top: 10,
-                    right: 16,
                     bottom: 10,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Center(
-                          child: Image.network(
-                            loadingBuilder: _buildLoadingShimmer,
-                            "http:${product.image}",
-                            width: 180,
-                            height: 180,
-                            fit: BoxFit.contain,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.grey.shade100,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    padding: const EdgeInsets.only(
+                      left: 16,
+                      top: 10,
+                      right: 16,
+                      bottom: 10,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: Image.network(
+                              loadingBuilder: _buildLoadingShimmer,
+                              "http:${product.image}",
+                              width: 180,
+                              height: 180,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        product.name,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        "Price: ${product.priceSign}${product.price}",
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    ],
+                        const SizedBox(height: 10),
+                        Text(
+                          product.name,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          "Price: ${product.priceSign}${product.price}",
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
