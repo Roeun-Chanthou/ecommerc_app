@@ -1,4 +1,4 @@
-import 'package:ecommerc_app/models/coupons_code.dart';
+import 'package:ecommerc_app/data/coupons_code.dart';
 import 'package:ecommerc_app/models/product_model.dart';
 import 'package:ecommerc_app/pages/orders/widgets/modal_contact.dart';
 import 'package:ecommerc_app/pages/orders/widgets/modal_coupon.dart';

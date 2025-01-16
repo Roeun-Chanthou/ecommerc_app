@@ -1,5 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:ecommerc_app/models/slide.dart';
+import 'package:ecommerc_app/data/slide.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:shimmer/shimmer.dart';
@@ -67,9 +67,11 @@ class _SliderBannerState extends State<SliderBanner> {
           const Spacer(),
           AnimatedSmoothIndicator(
             activeIndex: current,
-            count: 3,
+            count: 6,
             effect: ExpandingDotsEffect(
               dotColor: Colors.grey[300]!,
+              dotHeight: 10,
+              dotWidth: 10,
             ),
           ),
         ],

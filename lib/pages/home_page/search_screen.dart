@@ -3,6 +3,7 @@ import 'package:ecommerc_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../data/product_model.dart';
@@ -52,7 +53,7 @@ class _SearchScreenState extends State<SearchScreen> {
       isSearching = query.isNotEmpty;
       isLoading = true;
 
-      Future.delayed(const Duration(milliseconds: 900), () {
+      Future.delayed(const Duration(milliseconds: 1500), () {
         setState(() {
           filteredItems = products
               .where((item) => item['name'].toLowerCase().contains(query))
@@ -124,28 +125,74 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
       ),
       body: isLoading && searchController.text.isNotEmpty
-          ? ListView.separated(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              ),
-              itemBuilder: (context, index) {
-                return Shimmer.fromColors(
-                  baseColor: Colors.grey.shade300,
-                  highlightColor: Colors.grey.shade100,
-                  child: Container(
-                    height: 25,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(10),
+          ? SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Center(
+                    child: SizedBox(
+                      width: 100,
+                      height: 30,
+                      child: Center(
+                        child: LoadingIndicator(
+                          indicatorType: Indicator.lineScalePulseOut,
+                          colors: [Colors.red],
+                        ),
+                      ),
                     ),
                   ),
-                );
-              },
-              separatorBuilder: (context, index) {
-                return const SizedBox(height: 30);
-              },
-              itemCount: data.length,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          'searching ',
+                          style: TextStyle(
+                            fontSize: 17,
+                            color: Colors.grey.shade900,
+                          ),
+                        ),
+                        Text(
+                          '"${searchController.text}"',
+                          style: TextStyle(
+                            fontSize: 17,
+                            color: Colors.grey.shade900,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                      itemBuilder: (context, index) {
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                          highlightColor: Colors.grey.shade100,
+                          child: Container(
+                            height: 25,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) {
+                        return const SizedBox(height: 30);
+                      },
+                      itemCount: data.length,
+                    ),
+                  ),
+                ],
+              ),
             )
           : isSearching
               ? (filteredItems.isNotEmpty
@@ -180,7 +227,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 vertical: 10,
                               ),
                               child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Hero(
                                     tag: productFiltered.image,
@@ -229,6 +276,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                       ],
                                     ),
                                   ),
+                                  const SizedBox(width: 20),
+                                  const Icon(
+                                    Icons.arrow_forward_ios_outlined,
+                                  ),
                                 ],
                               ),
                             ),
@@ -237,16 +288,56 @@ class _SearchScreenState extends State<SearchScreen> {
                       },
                     )
                   : Center(
-                      child: Image.asset(
-                        "assets/icons/notfound.jpg",
-                        width: 300,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 10,
+                            ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  'searching ',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    color: Colors.grey.shade900,
+                                  ),
+                                ),
+                                Text(
+                                  '"${searchController.text}"',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    color: Colors.grey.shade900,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Image.asset(
+                            "assets/icons/notfound.jpg",
+                            width: 300,
+                          ),
+                        ],
                       ),
                     ))
               : Center(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      const SizedBox(height: 20),
+                      const SizedBox(
+                        width: 100,
+                        height: 50,
+                        child: Center(
+                          child: LoadingIndicator(
+                            indicatorType: Indicator.lineScalePulseOut,
+                            colors: [Colors.grey],
+                          ),
+                        ),
+                      ),
                       Image.asset(
                         "assets/icons/search.jpg",
                         height: 300,

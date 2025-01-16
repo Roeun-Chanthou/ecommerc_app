@@ -19,6 +19,7 @@ class _SettingState extends State<Setting> {
     screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
+        forceMaterialTransparency: true,
         backgroundColor: Colors.white,
         centerTitle: false,
         title: const Text(
@@ -109,9 +110,17 @@ class _SettingState extends State<Setting> {
               ),
             ),
             const SizedBox(height: 20),
-            _buildListTitle(
-              image: "assets/bill.svg",
-              title: "My Orders",
+            Bounceable(
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  Routes.myorder,
+                );
+              },
+              child: _buildListTitle(
+                image: "assets/bill.svg",
+                title: "My Orders",
+              ),
             ),
             const Divider(
               height: 0,

@@ -18,7 +18,7 @@ class SplashScreen extends StatelessWidget {
       ),
       duration: const Duration(milliseconds: 2000),
       animationDuration: const Duration(milliseconds: 2000),
-      nextScreen: const MainScreen(),
+      nextScreen: MainScreen(),
     );
   }
 }

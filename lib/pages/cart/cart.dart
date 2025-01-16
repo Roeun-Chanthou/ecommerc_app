@@ -1,4 +1,4 @@
-import 'package:ecommerc_app/helpers/cart_service.dart';
+import 'package:ecommerc_app/helpers/cart_helper.dart';
 import 'package:ecommerc_app/models/product_model.dart';
 import 'package:ecommerc_app/routes/routes.dart';
 import 'package:flutter/material.dart';
@@ -7,14 +7,14 @@ import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
 
-class MyCart extends StatefulWidget {
-  const MyCart({super.key});
+class Cart extends StatefulWidget {
+  const Cart({super.key});
 
   @override
-  State<MyCart> createState() => _MyCartState();
+  State<Cart> createState() => _CartState();
 }
 
-class _MyCartState extends State<MyCart> {
+class _CartState extends State<Cart> {
   late double screenWidth;
   late double screenHeight;
   List<Map<String, dynamic>> cart = [];

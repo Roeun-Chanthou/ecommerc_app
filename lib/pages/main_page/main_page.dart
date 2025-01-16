@@ -1,9 +1,10 @@
-import 'package:ecommerc_app/pages/home_page/home.dart';
-import 'package:ecommerc_app/pages/settings/setting.dart';
-import 'package:ecommerc_app/pages/wishlist/wish_list.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+
+import '../home_page/home.dart';
+import '../settings/setting.dart';
+import '../wishlist/wish_list.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -19,7 +20,7 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: IndexedStack(
         index: currentIndex,
-        children: const [
+        children: [
           HomeScreen(),
           WishListScreen(),
           Setting(),

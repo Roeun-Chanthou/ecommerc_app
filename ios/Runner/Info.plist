@@ -2,19 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to check connectivity.</string>
-
-
-	<key>NSDocumentsFolderUsageDescription</key>
-	<string>Your message explaining why the app needs this permission.</string>
-
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Ecommerc App</string>
+	<string>Makeup Shop</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -33,6 +26,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Your message explaining why the app needs this permission.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We need your location to ensure a smooth delivery experience.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

@@ -16,6 +16,7 @@ class Category extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        forceMaterialTransparency: true,
         backgroundColor: Colors.white,
         title: const Text("Product Category"),
       ),
@@ -59,12 +60,15 @@ class Category extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Image(
-                                loadingBuilder: _buildLoadingShimmer,
-                                image: NetworkImage("http:${product.image}"),
-                                fit: BoxFit.cover,
+                            child: Hero(
+                              tag: product.image,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Image(
+                                  loadingBuilder: _buildLoadingShimmer,
+                                  image: NetworkImage("http:${product.image}"),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                           ),

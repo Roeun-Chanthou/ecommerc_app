@@ -153,14 +153,6 @@ class WishListScreen extends StatelessWidget {
                     bottom: 10,
                   ),
                   child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Colors.grey.shade100,
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
                     padding: const EdgeInsets.only(
                       left: 16,
                       top: 10,

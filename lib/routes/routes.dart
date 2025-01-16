@@ -10,4 +10,5 @@ class Routes {
   static String location = '/location';
   static String search = '/search';
   static String ordercart = '/order_cart';
+  static String myorder = '/myorder';
 }

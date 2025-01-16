@@ -1,5 +1,5 @@
 import 'package:add_to_cart_animation/add_to_cart_animation.dart';
-import 'package:ecommerc_app/helpers/cart_service.dart';
+import 'package:ecommerc_app/helpers/cart_helper.dart';
 import 'package:ecommerc_app/helpers/favorite_helper.dart';
 import 'package:ecommerc_app/models/product_model.dart';
 import 'package:ecommerc_app/routes/routes.dart';
@@ -109,6 +109,7 @@ class _DetailProductState extends State<DetailProduct> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          forceMaterialTransparency: true,
           backgroundColor: Colors.white,
           title: const Text("Detail Product"),
           actions: [
@@ -153,20 +154,29 @@ class _DetailProductState extends State<DetailProduct> {
                                   arguments: cart,
                                 );
                               },
-                              child: Container(
-                                width: 18,
-                                height: 18,
-                                decoration: const BoxDecoration(
-                                  color: Colors.red,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    snapshot.data.toString(),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w600,
+                              child: Bounceable(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    Routes.cart,
+                                    arguments: cart,
+                                  );
+                                },
+                                child: Container(
+                                  width: 18,
+                                  height: 18,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      snapshot.data.toString(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -196,14 +206,19 @@ class _DetailProductState extends State<DetailProduct> {
                       key: imageGlobalKey,
                       color: Colors.white,
                       height: screenHeight * 0.35,
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
                       width: double.infinity,
                       child: Hero(
                         tag: productDS.image,
-                        child: Image.network(
-                          loadingBuilder: _buildLoadingShimmer,
-                          "http:${productDS.image}",
-                          fit: BoxFit.contain,
+                        child: Padding(
+                          padding: const EdgeInsets.all(50.0),
+                          child: Image.network(
+                            loadingBuilder: _buildLoadingShimmer,
+                            "http:${productDS.image}",
+                            fit: BoxFit.contain,
+                          ),
                         ),
                       ),
                     ),

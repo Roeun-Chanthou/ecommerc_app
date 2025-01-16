@@ -1,9 +1,12 @@
-import 'package:ecommerc_app/models/coupons_code.dart';
+import 'package:ecommerc_app/data/coupons_code.dart';
 import 'package:ecommerc_app/pages/orders/widgets/modal_contact.dart';
 import 'package:ecommerc_app/pages/orders/widgets/modal_coupon.dart';
 import 'package:ecommerc_app/routes/routes.dart';
+import 'package:ecommerc_app/widgets/space_height.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
+import 'package:intl/intl.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 
 class OrdersCart extends StatefulWidget {
   const OrdersCart({super.key});
@@ -19,6 +22,9 @@ class _OrdersCartState extends State<OrdersCart> {
   var number = '';
   var coupon = '';
   var location = '';
+  bool isOrder = true;
+  bool isMarkReciver = false;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +48,10 @@ class _OrdersCartState extends State<OrdersCart> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        forceMaterialTransparency: true,
         title: const Text(
           "Orders",
           style: TextStyle(fontSize: 20),
@@ -57,24 +64,45 @@ class _OrdersCartState extends State<OrdersCart> {
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 children: [
-                  const SizedBox(height: 12),
+                  Visibility(
+                    visible: !isMarkReciver && !isOrder,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 10,
+                      ),
+                      color: Colors.black,
+                      child: const Column(
+                        children: [
+                          Text(
+                            "We had received your order, our your customer service will contact you soon. Thanks for shopping with us.",
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SpaceHeight(),
                   Bounceable(
                     onTap: gotoLocationClick,
                     child: _buildDeliveryLocation(),
                   ),
-                  const SizedBox(height: 12),
+                  const SpaceHeight(),
                   Bounceable(
                     onTap: showModalNumberClick,
                     child: _buildContactNumber(),
                   ),
-                  const SizedBox(height: 12),
+                  const SpaceHeight(),
                   InkWell(
                     onTap: () {
                       Navigator.pushNamed(context, Routes.payment);
                     },
                     child: _buildPayment(),
                   ),
-                  const SizedBox(height: 12),
+                  const SpaceHeight(),
                   ListView.separated(
                     padding: EdgeInsets.zero,
                     scrollDirection: Axis.vertical,
@@ -215,12 +243,12 @@ class _OrdersCartState extends State<OrdersCart> {
                       );
                     },
                   ),
-                  const SizedBox(height: 12),
+                  const SpaceHeight(),
                   Bounceable(
                     onTap: showModalCouponClick,
                     child: _buildCoupon(),
                   ),
-                  const SizedBox(height: 12),
+                  const SpaceHeight(),
                   _buildOrderSummary(subtotal, discount, total, selectedItems),
                 ],
               ),
@@ -305,24 +333,155 @@ class _OrdersCartState extends State<OrdersCart> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            "USD \$${total.toStringAsFixed(2)}",
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-          ),
+          if (isLoading)
+            const Center(
+              child: SizedBox(
+                width: 100,
+                height: 30,
+                child: Center(
+                  child: LoadingIndicator(
+                    indicatorType: Indicator.lineScalePulseOut,
+                    colors: [Colors.red],
+                  ),
+                ),
+              ),
+            )
+          else if (isOrder)
+            Text(
+              "USD \$${total.toStringAsFixed(2)}",
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
+            )
+          else if (isMarkReciver)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "PROCESS",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.amber,
+                  ),
+                ),
+                Text(
+                  "${DateFormat('hh:mm').format(DateTime.now())}, ${DateTime.now().toString().split(' ')[0]}",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            )
+          else
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "COMPLETED",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(
+                  "${DateFormat('hh:mm').format(DateTime.now())}, ${DateTime.now().toString().split(' ')[0]}",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
           const Spacer(),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-              foregroundColor: Colors.white,
-              shape: const RoundedRectangleBorder(),
-              minimumSize: Size(screenWidth * 0.3, screenHeight * 0.055),
+          // if (isLoading)
+          //   const SizedBox.shrink()
+          if (isOrder)
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                shape: const RoundedRectangleBorder(),
+                minimumSize: Size(
+                  MediaQuery.of(context).size.width * 0.3,
+                  MediaQuery.of(context).size.height * 0.055,
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  isLoading = true;
+                });
+
+                Future.delayed(const Duration(seconds: 2), () {
+                  setState(() {
+                    isLoading = false;
+                    isOrder = false;
+                    isMarkReciver = true;
+                  });
+                });
+              },
+              child: const Text(
+                "PLACE ORDER",
+                style: TextStyle(fontSize: 16),
+              ),
+            )
+          else if (isMarkReciver)
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.black,
+                shape: const RoundedRectangleBorder(),
+                side: const BorderSide(
+                  color: Colors.black,
+                  width: 2,
+                ),
+                minimumSize: Size(
+                  MediaQuery.of(context).size.width * 0.3,
+                  MediaQuery.of(context).size.height * 0.055,
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  isLoading = true;
+                });
+
+                Future.delayed(const Duration(seconds: 2), () {
+                  setState(() {
+                    isLoading = false;
+                    isMarkReciver = false;
+                  });
+                });
+              },
+              child: const Text(
+                "MARK AS RECEIVED",
+                style: TextStyle(fontSize: 16),
+              ),
+            )
+          else
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green.shade500,
+                foregroundColor: Colors.white,
+                shape: const RoundedRectangleBorder(),
+                minimumSize: Size(
+                  MediaQuery.of(context).size.width * 0.3,
+                  MediaQuery.of(context).size.height * 0.055,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  Routes.mainScreen,
+                  (route) => false,
+                );
+              },
+              child: const Text(
+                "COMPLETED",
+                style: TextStyle(fontSize: 16),
+              ),
             ),
-            onPressed: () {},
-            child: const Text(
-              "PLACE ORDER",
-              style: TextStyle(fontSize: 16),
-            ),
-          ),
         ],
       ),
     );
