@@ -51,11 +51,11 @@ dependencies:
   flutter_icon_snackbar: ^1.2.1
   google_nav_bar: ^5.0.7
   another_flutter_splash_screen: ^1.2.1
-  # flutter_no_internet_widget: ^1.0.0+18-dev.1
-  # connectivity_plus: ^3.0.6
   intl: ^0.20.1
   loading_indicator: ^3.1.1
   flutter_launcher_icons: ^0.14.2
+  sqflite: ^2.4.1
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:
@@ -94,6 +94,7 @@ flutter:
     - assets/debit/
     - assets/icons/
     - assets/logo/
+    - assets/profile/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

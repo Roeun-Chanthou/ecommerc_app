@@ -3,7 +3,6 @@ import 'package:ecommerc_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../data/product_model.dart';
@@ -129,18 +128,6 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Center(
-                    child: SizedBox(
-                      width: 100,
-                      height: 30,
-                      child: Center(
-                        child: LoadingIndicator(
-                          indicatorType: Indicator.lineScalePulseOut,
-                          colors: [Colors.red],
-                        ),
-                      ),
-                    ),
-                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
@@ -316,8 +303,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             ),
                           ),
                           Image.asset(
-                            "assets/icons/notfound.jpg",
-                            width: 300,
+                            "assets/profile/Match-not-found.png",
+                            width: 200,
                           ),
                         ],
                       ),
@@ -328,16 +315,6 @@ class _SearchScreenState extends State<SearchScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       const SizedBox(height: 20),
-                      const SizedBox(
-                        width: 100,
-                        height: 50,
-                        child: Center(
-                          child: LoadingIndicator(
-                            indicatorType: Indicator.lineScalePulseOut,
-                            colors: [Colors.grey],
-                          ),
-                        ),
-                      ),
                       Image.asset(
                         "assets/icons/search.jpg",
                         height: 300,

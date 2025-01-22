@@ -8,6 +8,8 @@ import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
+import '../../database/database_helper.dart';
+
 class OrdersCart extends StatefulWidget {
   const OrdersCart({super.key});
 
@@ -25,6 +27,40 @@ class _OrdersCartState extends State<OrdersCart> {
   bool isOrder = true;
   bool isMarkReciver = false;
   bool isLoading = false;
+
+  String formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.now());
+
+  void saveOrderToDatabase(double subtotal, double discount, double total,
+      List<dynamic> selectedItems) async {
+    final orderData = {
+      'location': location,
+      'contactNumber': number,
+      'couponCode': coupon,
+      'subtotal': subtotal,
+      'discount': discount,
+      'total': total,
+      'date': DateTime.now().toIso8601String(),
+    };
+
+    final orderId = await DatabaseHelper.instance.insertOrder(orderData);
+
+    for (var item in selectedItems) {
+      final product = item['product'];
+      final orderItemData = {
+        'orderId': orderId,
+        'productName': product.name,
+        'productPrice': product.priceAsDouble,
+        'productImage': product.image,
+        'quantity': item['quantity'],
+        'color': item['color'],
+      };
+      await DatabaseHelper.instance.insertOrderItem(orderItemData);
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Order saved successfully!')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +101,7 @@ class _OrdersCartState extends State<OrdersCart> {
               child: Column(
                 children: [
                   Visibility(
-                    visible: !isMarkReciver && !isOrder,
+                    visible: isMarkReciver,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         vertical: 10,
@@ -367,9 +403,9 @@ class _OrdersCartState extends State<OrdersCart> {
                   ),
                 ),
                 Text(
-                  "${DateFormat('hh:mm').format(DateTime.now())}, ${DateTime.now().toString().split(' ')[0]}",
+                  "${DateFormat('hh:mm a').format(DateTime.now())}, ${formattedDate}",
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 12,
                     color: Colors.grey.shade600,
                   ),
                 ),
@@ -382,23 +418,21 @@ class _OrdersCartState extends State<OrdersCart> {
                 const Text(
                   "COMPLETED",
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
                 ),
                 Text(
-                  "${DateFormat('hh:mm').format(DateTime.now())}, ${DateTime.now().toString().split(' ')[0]}",
+                  "${DateFormat('hh:mm a').format(DateTime.now())}, ${formattedDate}",
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 12,
                     color: Colors.grey.shade600,
                   ),
                 ),
               ],
             ),
           const Spacer(),
-          // if (isLoading)
-          //   const SizedBox.shrink()
           if (isOrder)
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -415,17 +449,20 @@ class _OrdersCartState extends State<OrdersCart> {
                   isLoading = true;
                 });
 
-                Future.delayed(const Duration(seconds: 2), () {
-                  setState(() {
-                    isLoading = false;
-                    isOrder = false;
-                    isMarkReciver = true;
-                  });
-                });
+                Future.delayed(
+                  const Duration(seconds: 2),
+                  () {
+                    setState(() {
+                      isLoading = false;
+                      isOrder = false;
+                      isMarkReciver = true;
+                    });
+                  },
+                );
               },
               child: const Text(
                 "PLACE ORDER",
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 14),
               ),
             )
           else if (isMarkReciver)
@@ -438,7 +475,7 @@ class _OrdersCartState extends State<OrdersCart> {
                   width: 2,
                 ),
                 minimumSize: Size(
-                  MediaQuery.of(context).size.width * 0.3,
+                  MediaQuery.of(context).size.width * 0.2,
                   MediaQuery.of(context).size.height * 0.055,
                 ),
               ),
@@ -456,7 +493,7 @@ class _OrdersCartState extends State<OrdersCart> {
               },
               child: const Text(
                 "MARK AS RECEIVED",
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 14),
               ),
             )
           else
