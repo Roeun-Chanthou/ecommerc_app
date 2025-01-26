@@ -33,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverAppBar(
             pinned: true,
             forceElevated: true,
+            forceMaterialTransparency: true,
             floating: true,
             snap: true,
             backgroundColor: Colors.white,
@@ -249,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SliverToBoxAdapter(
             child: Container(
-              color: Colors.white,
+              // color: Colors.white,
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

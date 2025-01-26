@@ -1,19 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../home_page/home.dart';
 import '../settings/setting.dart';
 import '../wishlist/wish_list.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  String username;
+  MainScreen({super.key, this.username = ""});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
+  late String username;
+
+  @override
+  void initState() {
+    super.initState();
+    username = widget.username;
+    _fetchUsername();
+  }
+
+  Future<void> _fetchUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      username = prefs.getString('username') ?? '';
+    });
+  }
+
   int currentIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -23,7 +41,9 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           HomeScreen(),
           WishListScreen(),
-          Setting(),
+          Setting(
+            username: widget.username,
+          ),
         ],
       ),
       bottomNavigationBar: Container(
@@ -49,7 +69,7 @@ class _MainScreenState extends State<MainScreen> {
             activeColor: Colors.black,
             iconSize: 20,
             style: GnavStyle.google,
-            tabBackgroundColor: Colors.purple.withOpacity(0.1),
+            tabBackgroundColor: Colors.blue.shade100,
             padding: const EdgeInsets.symmetric(
               horizontal: 20,
               vertical: 10,

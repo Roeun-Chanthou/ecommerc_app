@@ -76,7 +76,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 sliver: SliverToBoxAdapter(
                   child: SizedBox(
-                    height: screenHeight - 100,
+                    height: screenHeight - 90,
                     child: Column(
                       children: [
                         Expanded(
@@ -88,6 +88,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                 width: screenWidth * 0.8,
                                 height: screenHeight * 0.3,
                               ),
+                              SizedBox(height: 30),
                               AnimatedBuilder(
                                 animation: _shakeAnimation,
                                 builder: (context, child) {
@@ -156,7 +157,9 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
                                   ),
                                 ),
                                 onPressed: _loginUser,
-                                child: const Text("LOGIN"),
+                                child: const Text(
+                                  "LOGIN",
+                                ),
                               ),
                             ],
                           ),
@@ -190,19 +193,19 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         contentPadding: const EdgeInsets.symmetric(horizontal: 20),
         border: OutlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.grey.shade300,
+            color: Colors.grey.shade400,
           ),
           borderRadius: BorderRadius.circular(15),
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.grey.shade300,
+            color: Colors.grey.shade400,
           ),
           borderRadius: BorderRadius.circular(15),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: Colors.grey.shade300,
+            color: Colors.grey.shade400,
           ),
           borderRadius: BorderRadius.circular(15),
         ),
@@ -220,7 +223,10 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
           children: [
             Text(
               "Don't have an account?",
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              style: TextStyle(
+                fontSize: 16,
+                // color: Colors.grey.shade600,
+              ),
             ),
             const SizedBox(width: 10),
             Bounceable(
@@ -234,7 +240,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
               child: const Text(
                 "Register",
                 style: TextStyle(
-                  color: Colors.black,
+                  // color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -261,16 +267,14 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
         if (result.isNotEmpty) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setBool('isLoggedIn', true);
+          await prefs.setString('username', _textUsername.text);
+          await prefs.setBool('showWelcomeDialog', true);
 
           Navigator.pushNamedAndRemoveUntil(
             context,
             Routes.mainScreen,
+            arguments: _textUsername.text,
             (route) => false,
-          );
-          IconSnackBar.show(
-            context,
-            snackBarType: SnackBarType.success,
-            label: 'Login Success',
           );
         } else {
           triggerShake();

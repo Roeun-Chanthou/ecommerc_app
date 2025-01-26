@@ -213,3 +213,4 @@ class WishListScreen extends StatelessWidget {
     );
   }
 }
+

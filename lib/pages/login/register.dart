@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqlite_api.dart';
 
 import '../../database/register_helper.dart';
 import '../../routes/routes.dart';
@@ -265,19 +266,19 @@ class _RegisterState extends State<Register>
           contentPadding: const EdgeInsets.symmetric(horizontal: 20),
           border: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Colors.grey.shade200,
+              color: Colors.grey.shade400,
             ),
             borderRadius: BorderRadius.circular(15),
           ),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Colors.grey.shade200,
+              color: Colors.grey.shade400,
             ),
             borderRadius: BorderRadius.circular(15),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: Colors.grey.shade200,
+              color: Colors.grey.shade400,
             ),
             borderRadius: BorderRadius.circular(15),
           ),
@@ -296,7 +297,10 @@ class _RegisterState extends State<Register>
           children: [
             Text(
               "Already have an account?",
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+              style: TextStyle(
+                fontSize: 16,
+                // color: Colors.grey.shade600,
+              ),
             ),
             const SizedBox(width: 10),
             GestureDetector(
@@ -310,7 +314,7 @@ class _RegisterState extends State<Register>
               child: const Text(
                 "Login",
                 style: TextStyle(
-                  color: Colors.black,
+                  // color: Colors.black,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -324,16 +328,31 @@ class _RegisterState extends State<Register>
 
   Future<void> _registerUser() async {
     if (_formKey.currentState?.validate() ?? false) {
+      if (_textPassword.text.length < 8) {
+        IconSnackBar.show(
+          context,
+          snackBarType: SnackBarType.fail,
+          label: 'Password must be at least 8 characters long!',
+        );
+        return;
+      }
+
+      if (_textPassword.text.length > 128) {
+        IconSnackBar.show(
+          context,
+          snackBarType: SnackBarType.fail,
+          label: 'Password is too long! Maximum 128 characters.',
+        );
+        return;
+      }
       if (_textPassword.text != _textCPS.text) {
         IconSnackBar.show(
           context,
           snackBarType: SnackBarType.fail,
           label: 'Passwords do not match!',
         );
-
         return;
       }
-
       final user = {
         'firstName': _textFirstName.text,
         'lastName': _textLastName.text,
@@ -343,20 +362,39 @@ class _RegisterState extends State<Register>
 
       try {
         await DatabaseHelper.instance.insertUser(user);
-
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true);
 
+        _textFirstName.clear();
+        _textLastName.clear();
+        _textUsername.clear();
+        _textPassword.clear();
+        _textCPS.clear();
+        FocusScope.of(context).unfocus();
         Navigator.pushNamedAndRemoveUntil(
           context,
-          Routes.mainScreen,
+          Routes.login,
           (route) => false,
         );
+      } on DatabaseException catch (e) {
+        if (e.isUniqueConstraintError()) {
+          IconSnackBar.show(
+            context,
+            snackBarType: SnackBarType.fail,
+            label: 'Username already exists!',
+          );
+        } else {
+          IconSnackBar.show(
+            context,
+            snackBarType: SnackBarType.fail,
+            label: 'Database error: ${e}',
+          );
+        }
       } catch (e) {
         IconSnackBar.show(
           context,
           snackBarType: SnackBarType.fail,
-          label: 'Username already exists!',
+          label: 'An unexpected error occurred!',
         );
       }
     }
