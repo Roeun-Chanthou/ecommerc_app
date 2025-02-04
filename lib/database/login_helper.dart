@@ -1,11 +1,11 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-class DatabaseHelper {
-  static final DatabaseHelper instance = DatabaseHelper._init();
+class LoginDatabaseHelper {
+  static final LoginDatabaseHelper instance = LoginDatabaseHelper._init();
   static Database? _database;
 
-  DatabaseHelper._init();
+  LoginDatabaseHelper._init();
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -41,5 +41,15 @@ class DatabaseHelper {
   Future<int> insertUser(Map<String, dynamic> user) async {
     final db = await instance.database;
     return await db.insert('users', user);
+  }
+
+  static Future<Map<String, dynamic>> getUserDetails(String username) async {
+    final db = await instance.database;
+    final result = await db.query(
+      'users',
+      where: 'username = ?',
+      whereArgs: [username],
+    );
+    return result.first;
   }
 }

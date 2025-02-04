@@ -72,7 +72,10 @@ class _LocationDeliveryState extends State<LocationDelivery> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        forceMaterialTransparency: true,
         title: const Text('Delivery Location '),
       ),
       body: Stack(

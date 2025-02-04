@@ -1,4 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:ecommerc_app/database/login_helper.dart';
+import 'package:ecommerc_app/pages/order_proudct/my_order.dart';
 import 'package:ecommerc_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
@@ -6,28 +8,26 @@ import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Setting extends StatefulWidget {
-  String username;
-  Setting({super.key, this.username = ""});
+  Setting({
+    super.key,
+  });
 
   @override
   State<Setting> createState() => _SettingState();
 }
 
 class _SettingState extends State<Setting> {
-  late String username;
+  var fullName = "";
+  var username = '';
   @override
   void initState() {
     super.initState();
-    username = widget.username;
-    _fetchUsername();
+    getFullName();
+    getWelcomeDailog();
   }
 
-  Future<void> _fetchUsername() async {
+  Future<void> getWelcomeDailog() async {
     final prefs = await SharedPreferences.getInstance();
-
-    setState(() {
-      username = prefs.getString('username') ?? '';
-    });
 
     bool showWelcomeDialog = prefs.getBool('showWelcomeDialog') ?? false;
     if (showWelcomeDialog) {
@@ -38,24 +38,35 @@ class _SettingState extends State<Setting> {
     }
   }
 
+  void getFullName() async {
+    var prefs = await SharedPreferences.getInstance();
+    var storeUsername = prefs.getString("username") ?? "users";
+    var data = await LoginDatabaseHelper.getUserDetails(storeUsername);
+    print(data);
+    setState(() {
+      fullName = "${data["firstName"]} ${data['lastName']}";
+      username = data["username"];
+    });
+  }
+
   void _showWelcomeDialog() {
     AwesomeDialog(
       context: context,
       dialogType: DialogType.success,
       animType: AnimType.scale,
-      title: username,
+      title: "Welcome\n${fullName}",
       titleTextStyle: const TextStyle(
-        fontSize: 20,
+        fontSize: 30,
         color: Colors.black,
         fontWeight: FontWeight.bold,
       ),
-      desc: 'Welcome $username',
+      desc: 'You can buy anything in this app.',
       descTextStyle: const TextStyle(
         fontSize: 16,
         color: Colors.black,
         fontWeight: FontWeight.normal,
       ),
-      autoHide: const Duration(seconds: 2),
+      autoHide: const Duration(seconds: 5),
     ).show();
   }
 
@@ -139,7 +150,7 @@ class _SettingState extends State<Setting> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "${username}",
+                        username,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -162,9 +173,12 @@ class _SettingState extends State<Setting> {
             const SizedBox(height: 20),
             Bounceable(
               onTap: () {
-                Navigator.pushNamed(
+                Navigator.push(
                   context,
-                  Routes.darkMode,
+                  MaterialPageRoute(
+                    builder: (context) => MyOrder(),
+                    fullscreenDialog: true,
+                  ),
                 );
               },
               child: _buildListTitle(
@@ -188,19 +202,18 @@ class _SettingState extends State<Setting> {
               title: "Privacy Policy",
             ),
             const SizedBox(height: 20),
-            Bounceable(
-              onTap: () {
-                Navigator.pushNamed(
-                  context,
-                  Routes.darkMode,
-                );
-              },
-              child: _buildListTitle(
-                image: "assets/dark-mode-alt-2.svg",
-                title: "Dark Theme",
-              ),
-            ),
-            const Divider(height: 0),
+            // Bounceable(
+            //   onTap: () {
+            //     Navigator.pushNamed(
+            //       context,
+            //       Routes.darkMode,
+            //     );
+            //   },
+            //   child: _buildListTitle(
+            //     image: "assets/dark-mode-alt-2.svg",
+            //     title: "Dark Theme",
+            //   ),
+            // ),
             Bounceable(
               onTap: _logout,
               child: _buildListTitle(

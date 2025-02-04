@@ -3,7 +3,7 @@ import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../database/register_helper.dart';
+import '../../database/login_helper.dart';
 import '../../routes/routes.dart';
 
 class Login extends StatefulWidget {
@@ -255,7 +255,7 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
   Future<void> _loginUser() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
-        final db = DatabaseHelper.instance;
+        final db = LoginDatabaseHelper.instance;
         final dbConnection = await db.database;
 
         final result = await dbConnection.query(
@@ -273,7 +273,6 @@ class _LoginState extends State<Login> with SingleTickerProviderStateMixin {
           Navigator.pushNamedAndRemoveUntil(
             context,
             Routes.mainScreen,
-            arguments: _textUsername.text,
             (route) => false,
           );
         } else {

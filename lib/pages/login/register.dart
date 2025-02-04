@@ -3,7 +3,7 @@ import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqlite_api.dart';
 
-import '../../database/register_helper.dart';
+import '../../database/login_helper.dart';
 import '../../routes/routes.dart';
 
 class Register extends StatefulWidget {
@@ -361,7 +361,7 @@ class _RegisterState extends State<Register>
       };
 
       try {
-        await DatabaseHelper.instance.insertUser(user);
+        await LoginDatabaseHelper.instance.insertUser(user);
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true);
 

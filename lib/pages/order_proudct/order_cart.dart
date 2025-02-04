@@ -1,14 +1,12 @@
-import 'package:ecommerc_app/data/coupons_code.dart';
-import 'package:ecommerc_app/pages/orders/widgets/modal_contact.dart';
-import 'package:ecommerc_app/pages/orders/widgets/modal_coupon.dart';
 import 'package:ecommerc_app/routes/routes.dart';
-import 'package:ecommerc_app/widgets/space_height.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:intl/intl.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 
-import '../../database/database_helper.dart';
+import '../../models/order_model.dart';
+import '../../widgets/space_height.dart';
+import '../orders/widgets/modal_contact.dart';
+import '../orders/widgets/modal_coupon.dart';
 
 class OrdersCart extends StatefulWidget {
   const OrdersCart({super.key});
@@ -21,46 +19,16 @@ class _OrdersCartState extends State<OrdersCart> {
   late double screenWidth;
   late double screenHeight;
 
-  var number = '';
-  var coupon = '';
-  var location = '';
   bool isOrder = true;
   bool isMarkReciver = false;
   bool isLoading = false;
 
+  var number = '';
+  var coupon = '';
+  var location = '';
+  List<Order> orders = [];
+
   String formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.now());
-
-  void saveOrderToDatabase(double subtotal, double discount, double total,
-      List<dynamic> selectedItems) async {
-    final orderData = {
-      'location': location,
-      'contactNumber': number,
-      'couponCode': coupon,
-      'subtotal': subtotal,
-      'discount': discount,
-      'total': total,
-      'date': DateTime.now().toIso8601String(),
-    };
-
-    final orderId = await DatabaseHelper.instance.insertOrder(orderData);
-
-    for (var item in selectedItems) {
-      final product = item['product'];
-      final orderItemData = {
-        'orderId': orderId,
-        'productName': product.name,
-        'productPrice': product.priceAsDouble,
-        'productImage': product.image,
-        'quantity': item['quantity'],
-        'color': item['color'],
-      };
-      await DatabaseHelper.instance.insertOrderItem(orderItemData);
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Order saved successfully!')),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,17 +41,14 @@ class _OrdersCartState extends State<OrdersCart> {
 
     double subtotal = 0.0;
     double discount = 0.0;
-
     for (var item in selectedItems) {
       var product = item['product'];
       var quantity = item['quantity'];
       subtotal += product.priceAsDouble * quantity;
     }
-    discount = calculateDiscount(subtotal, coupon);
-    double total = subtotal - discount;
+    double total = subtotal;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -97,7 +62,7 @@ class _OrdersCartState extends State<OrdersCart> {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
+              physics: AlwaysScrollableScrollPhysics(),
               child: Column(
                 children: [
                   Visibility(
@@ -154,7 +119,6 @@ class _OrdersCartState extends State<OrdersCart> {
                       var product = item['product'];
                       var quantity = item['quantity'];
                       var color = item['color'];
-
                       return Container(
                         color: Colors.white,
                         height: screenHeight * 0.13,
@@ -194,7 +158,7 @@ class _OrdersCartState extends State<OrdersCart> {
                                   Text(
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 1,
-                                    "Color: $color",
+                                    "Color: ${color}",
                                     style: const TextStyle(fontSize: 14),
                                   ),
                                 ],
@@ -290,21 +254,160 @@ class _OrdersCartState extends State<OrdersCart> {
               ),
             ),
           ),
-          _buildBottomPlace(total),
+          const SpaceHeight(),
+          _buildBottomPlace(total, selectedItems, arguments),
         ],
       ),
     );
   }
 
-  double calculateDiscount(double subtotal, String couponCode) {
-    var selectedCoupon = coupons.firstWhere(
-      (c) => c['code'] == couponCode,
-      orElse: () => {},
+  Widget _buildBottomPlace(double total, List<dynamic> selectedItems,
+      Map<String, dynamic> arguments) {
+    return SafeArea(
+      bottom: true,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+        ),
+        color: Colors.white,
+        child: Row(
+          children: [
+            if (isOrder)
+              Text(
+                "USD \$${total.toStringAsFixed(2)}",
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              )
+            else if (isMarkReciver)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "PROCESS",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.amber,
+                    ),
+                  ),
+                  Text(
+                    "${DateFormat('hh:mm a').format(DateTime.now())}, $formattedDate",
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
+                ],
+              )
+            else
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "COMPLETED",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    "${DateFormat('hh:mm a').format(DateTime.now())}, $formattedDate",
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+            const Spacer(),
+            if (isOrder)
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(200, 50),
+                  shape: RoundedRectangleBorder(),
+                ),
+                onPressed: () async {
+                  setState(() => isLoading = true);
+
+                  List<int> orderedIndexes = [];
+
+                  for (var item in selectedItems) {
+                    var product = item['product'];
+                    var quantity = item['quantity'];
+
+                    final newOrder = Order(
+                      id: DateTime.now().millisecondsSinceEpoch.toString(),
+                      status: "PROCESS",
+                      datetime: DateTime.now(),
+                      image: product.image,
+                      name: product.name,
+                      price: product.priceAsDouble * quantity,
+                    );
+
+                    await DatabaseHelper().saveOrder(newOrder);
+                    orders.add(newOrder);
+
+                    orderedIndexes.add(item['index']);
+                  }
+
+                  var removeOrderedItems = arguments['removeOrderedItems'];
+                  if (removeOrderedItems != null) {
+                    removeOrderedItems(orderedIndexes);
+                  }
+
+                  setState(() {
+                    isLoading = false;
+                    isOrder = false;
+                    isMarkReciver = true;
+                  });
+                },
+                child: const Text("PLACE ORDER"),
+              )
+            else if (isMarkReciver)
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.black,
+                  side: const BorderSide(color: Colors.black, width: 2),
+                  minimumSize: const Size(200, 40),
+                  shape: RoundedRectangleBorder(),
+                ),
+                onPressed: () async {
+                  if (orders.isNotEmpty) {
+                    final lastOrder = orders.last.copyWith(status: "COMPLETED");
+
+                    await DatabaseHelper().updateOrderStatus(
+                      lastOrder.id,
+                      "COMPLETED",
+                    );
+
+                    setState(() {
+                      isMarkReciver = false;
+                      orders[orders.length - 1] = lastOrder;
+                    });
+                  }
+                },
+                child: const Text("MARK AS RECEIVED"),
+              )
+            else
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(200, 40),
+                  shape: RoundedRectangleBorder(),
+                ),
+                onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    Routes.mainScreen,
+                    (route) => false,
+                  );
+                },
+                child: const Text("COMPLETED"),
+              ),
+          ],
+        ),
+      ),
     );
-    if (selectedCoupon.isNotEmpty) {
-      return subtotal * (selectedCoupon['value'] / 100);
-    }
-    return 0.0;
   }
 
   Widget _buildDeliveryLocation() {
@@ -357,168 +460,6 @@ class _OrdersCartState extends State<OrdersCart> {
               ],
             ),
           )
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomPlace(double total) {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 30),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          if (isLoading)
-            const Center(
-              child: SizedBox(
-                width: 100,
-                height: 30,
-                child: Center(
-                  child: LoadingIndicator(
-                    indicatorType: Indicator.lineScalePulseOut,
-                    colors: [Colors.red],
-                  ),
-                ),
-              ),
-            )
-          else if (isOrder)
-            Text(
-              "USD \$${total.toStringAsFixed(2)}",
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
-            )
-          else if (isMarkReciver)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "PROCESS",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.amber,
-                  ),
-                ),
-                Text(
-                  "${DateFormat('hh:mm a').format(DateTime.now())}, ${formattedDate}",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            )
-          else
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "COMPLETED",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                Text(
-                  "${DateFormat('hh:mm a').format(DateTime.now())}, ${formattedDate}",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            ),
-          const Spacer(),
-          if (isOrder)
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
-                shape: const RoundedRectangleBorder(),
-                minimumSize: Size(
-                  MediaQuery.of(context).size.width * 0.3,
-                  MediaQuery.of(context).size.height * 0.055,
-                ),
-              ),
-              onPressed: () {
-                setState(() {
-                  isLoading = true;
-                });
-
-                Future.delayed(
-                  const Duration(seconds: 2),
-                  () {
-                    setState(() {
-                      isLoading = false;
-                      isOrder = false;
-                      isMarkReciver = true;
-                    });
-                  },
-                );
-              },
-              child: const Text(
-                "PLACE ORDER",
-                style: TextStyle(fontSize: 14),
-              ),
-            )
-          else if (isMarkReciver)
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.black,
-                shape: const RoundedRectangleBorder(),
-                side: const BorderSide(
-                  color: Colors.black,
-                  width: 2,
-                ),
-                minimumSize: Size(
-                  MediaQuery.of(context).size.width * 0.2,
-                  MediaQuery.of(context).size.height * 0.055,
-                ),
-              ),
-              onPressed: () {
-                setState(() {
-                  isLoading = true;
-                });
-
-                Future.delayed(const Duration(seconds: 2), () {
-                  setState(() {
-                    isLoading = false;
-                    isMarkReciver = false;
-                  });
-                });
-              },
-              child: const Text(
-                "MARK AS RECEIVED",
-                style: TextStyle(fontSize: 14),
-              ),
-            )
-          else
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green.shade500,
-                foregroundColor: Colors.white,
-                shape: const RoundedRectangleBorder(),
-                minimumSize: Size(
-                  MediaQuery.of(context).size.width * 0.3,
-                  MediaQuery.of(context).size.height * 0.055,
-                ),
-              ),
-              onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  Routes.mainScreen,
-                  (route) => false,
-                );
-              },
-              child: const Text(
-                "COMPLETED",
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
         ],
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerc_app/data/product_model.dart';
 import 'package:ecommerc_app/models/product_model.dart';
 import 'package:ecommerc_app/routes/routes.dart';
@@ -306,13 +307,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Hero(
                                   tag: product.image,
-                                  child: Image(
-                                    loadingBuilder: _buildLoadingShimmer,
-                                    image: NetworkImage(
-                                      "http:${product.image}",
-                                    ),
-                                    fit: BoxFit.contain,
+                                  child: CachedNetworkImage(
+                                    imageUrl: "http:${product.image}",
+                                    placeholder: (context, url) =>
+                                        CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(Icons.error),
                                   ),
+                                  // Image(
+                                  //   loadingBuilder: _buildLoadingShimmer,
+                                  //   image: NetworkImage(
+                                  //     "http:${product.image}",
+                                  //   ),
+                                  //   fit: BoxFit.contain,
+                                  // ),
                                 ),
                               ),
                             ),

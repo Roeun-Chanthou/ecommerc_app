@@ -1,11 +1,12 @@
 import 'package:ecommerc_app/helpers/cart_helper.dart';
 import 'package:ecommerc_app/models/product_model.dart';
-import 'package:ecommerc_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../../routes/routes.dart';
 
 class Cart extends StatefulWidget {
   const Cart({super.key});
@@ -75,19 +76,40 @@ class _CartState extends State<Cart> {
     cartService.saveCart(serializedCart);
   }
 
+  // void _removeSelectedItems() {
+  //   setState(() {
+  //     cart = cart
+  //         .where((item) => !selectedIndexes.contains(cart.indexOf(item)))
+  //         .toList();
+  //     selectedIndexes.clear();
+  //     _updateTotal();
+  //   });
+  //   _saveCart();
+  //   IconSnackBar.show(
+  //     context,
+  //     snackBarType: SnackBarType.fail,
+  //     label: 'Remove from cart',
+  //   );
+  // }
+
   void _removeSelectedItems() {
     setState(() {
-      cart = cart
-          .where((item) => !selectedIndexes.contains(cart.indexOf(item)))
-          .toList();
+      List<int> sortedIndexes = selectedIndexes.toList()..sort((a, b) => b - a);
+
+      for (int index in sortedIndexes) {
+        cart.removeAt(index);
+      }
+
       selectedIndexes.clear();
       _updateTotal();
     });
+
     _saveCart();
+
     IconSnackBar.show(
       context,
       snackBarType: SnackBarType.fail,
-      label: 'Remove from cart',
+      label: 'Removed from cart',
     );
   }
 
@@ -131,6 +153,25 @@ class _CartState extends State<Cart> {
     _saveCart();
   }
 
+  // void _navigateToOrders() {
+  //   List<Map<String, dynamic>> selectedItems = selectedIndexes.map((index) {
+  //     var cartItem = cart[index];
+  //     return {
+  //       'product': cartItem['product'],
+  //       'quantity': cartItem['quantity'],
+  //       'color': cartItem['color'],
+  //     };
+  //   }).toList();
+
+  //   Navigator.pushNamed(
+  //     context,
+  //     Routes.ordercart,
+  //     arguments: {
+  //       'selectedItems': selectedItems,
+  //     },
+  //   );
+  // }
+
   void _navigateToOrders() {
     List<Map<String, dynamic>> selectedItems = selectedIndexes.map((index) {
       var cartItem = cart[index];
@@ -138,6 +179,7 @@ class _CartState extends State<Cart> {
         'product': cartItem['product'],
         'quantity': cartItem['quantity'],
         'color': cartItem['color'],
+        'index': index,
       };
     }).toList();
 
@@ -146,6 +188,19 @@ class _CartState extends State<Cart> {
       Routes.ordercart,
       arguments: {
         'selectedItems': selectedItems,
+        'removeOrderedItems': (List<int> orderedIndexes) {
+          setState(() {
+            cart = cart
+                .asMap()
+                .entries
+                .where((entry) => !orderedIndexes.contains(entry.key))
+                .map((entry) => entry.value)
+                .toList();
+            selectedIndexes.clear();
+            _updateTotal();
+          });
+          _saveCart();
+        },
       },
     );
   }
@@ -388,43 +443,121 @@ class _CartState extends State<Cart> {
     );
   }
 
+  // Widget _buildBottomPlace(double total) {
+  //   return Container(
+  //     color: Colors.white,
+  //     padding: const EdgeInsets.only(left: 20, right: 20, bottom: 30),
+  //     child: Row(
+  //       crossAxisAlignment: CrossAxisAlignment.center,
+  //       children: [
+  //         Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             Text(
+  //               "USD \$${total.toStringAsFixed(2)}",
+  //               style:
+  //                   const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+  //             ),
+  //             Text(
+  //               "${selectedIndexes.length} items",
+  //               style: const TextStyle(
+  //                 fontSize: 15,
+  //                 color: Colors.grey,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         const Spacer(),
+  //         ElevatedButton(
+  //           style: ElevatedButton.styleFrom(
+  //             backgroundColor: Colors.black,
+  //             foregroundColor: Colors.white,
+  //             shape: const RoundedRectangleBorder(),
+  //             minimumSize: Size(screenWidth * 0.3, screenHeight * 0.055),
+  //           ),
+  //           onPressed: selectedIndexes.isNotEmpty ? _navigateToOrders : null,
+  //           child: const Text(
+  //             "CHECKOUT",
+  //             style: TextStyle(fontSize: 16),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget _buildBottomPlace(double total) {
+    List<String> selectedImages = selectedIndexes.map((index) {
+      return (cart[index]['product'] as ProductModel).image;
+    }).toList();
+
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.only(left: 20, right: 20, bottom: 30),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "USD \$${total.toStringAsFixed(2)}",
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          if (selectedIndexes.isNotEmpty)
+            SizedBox(
+              height: 60,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: selectedImages.length,
+                separatorBuilder: (context, index) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      "http:${selectedImages[index]}",
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          "assets/images/placeholder.png",
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    ),
+                  );
+                },
               ),
-              Text(
-                "${selectedIndexes.length} items",
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: Colors.grey,
+            ),
+          const SizedBox(height: 10),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "USD \$${total.toStringAsFixed(2)}",
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                  Text(
+                    "${selectedIndexes.length} items selected",
+                    style: const TextStyle(fontSize: 15, color: Colors.grey),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  shape: const RoundedRectangleBorder(),
+                  minimumSize: Size(screenWidth * 0.3, screenHeight * 0.055),
+                ),
+                onPressed:
+                    selectedIndexes.isNotEmpty ? _navigateToOrders : null,
+                child: const Text(
+                  "CHECKOUT",
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ],
-          ),
-          const Spacer(),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-              foregroundColor: Colors.white,
-              shape: const RoundedRectangleBorder(),
-              minimumSize: Size(screenWidth * 0.3, screenHeight * 0.055),
-            ),
-            onPressed: selectedIndexes.isNotEmpty ? _navigateToOrders : null,
-            child: const Text(
-              "CHECKOUT",
-              style: TextStyle(fontSize: 16),
-            ),
           ),
         ],
       ),

@@ -23,4 +23,10 @@ class CartService {
 
     return [];
   }
+
+  Future<void> removeProductFromCart(String productId) async {
+    List<Map<String, dynamic>> cart = await getCart();
+    cart.removeWhere((item) => item['product']['id'] == productId);
+    await saveCart(cart);
+  }
 }
