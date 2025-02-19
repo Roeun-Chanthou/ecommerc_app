@@ -1,9 +1,16 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
+import 'package:ecommerc_app/pages/login/login.dart';
 import 'package:ecommerc_app/pages/main_page/main_page.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({
+    Key? key,
+    required this.isLoggedIn,
+  }) : super(key: key);
+
+  final bool isLoggedIn;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +25,7 @@ class SplashScreen extends StatelessWidget {
       ),
       duration: const Duration(milliseconds: 2000),
       animationDuration: const Duration(milliseconds: 2000),
-      nextScreen: MainScreen(),
+      nextScreen: isLoggedIn ? MainScreen() : Login(),
     );
   }
 }

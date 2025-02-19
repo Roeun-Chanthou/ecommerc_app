@@ -32,7 +32,7 @@ class _MainScreenState extends State<MainScreen> {
         color: Colors.white,
         child: Padding(
           padding: const EdgeInsets.only(
-            bottom: 30,
+            bottom: 40,
             left: 20,
             right: 20,
             top: 10,

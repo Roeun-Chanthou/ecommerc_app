@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:ecommerc_app/models/product_model.dart';
+import 'package:ecommerc_app/data/models/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';

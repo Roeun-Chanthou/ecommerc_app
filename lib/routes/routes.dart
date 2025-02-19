@@ -13,5 +13,5 @@ class Routes {
   static String myorder = '/myorder';
   static String login = '/login';
   static String register = '/register';
-  static String darkMode = '/dark_mode';
+  static String order2 = '/order2';
 }

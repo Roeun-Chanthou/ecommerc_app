@@ -1,9 +1,12 @@
+import 'package:ecommerc_app/data/network/database/login_helper.dart';
 import 'package:ecommerc_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../models/order_model.dart';
+import '../../data/data_source/coupons_code.dart';
+import '../../data/network/database/order_helper.dart';
 import '../../widgets/space_height.dart';
 import '../orders/widgets/modal_contact.dart';
 import '../orders/widgets/modal_coupon.dart';
@@ -19,13 +22,32 @@ class _OrdersCartState extends State<OrdersCart> {
   late double screenWidth;
   late double screenHeight;
 
+  @override
+  void initState() {
+    getUserID();
+    super.initState();
+  }
+
   bool isOrder = true;
   bool isMarkReciver = false;
   bool isLoading = false;
+  int userID = 0;
+  void getUserID() async {
+    var pref = await SharedPreferences.getInstance();
+    var username = pref.getString('username') ?? '';
+
+    var data = await LoginDatabaseHelper.getUserDetails(username);
+
+    setState(() {
+      userID = data['id'] ?? 0;
+      print(data['id']);
+    });
+  }
 
   var number = '';
   var coupon = '';
   var location = '';
+  double totalPrice = 0.0;
   List<Order> orders = [];
 
   String formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.now());
@@ -41,16 +63,20 @@ class _OrdersCartState extends State<OrdersCart> {
 
     double subtotal = 0.0;
     double discount = 0.0;
+
     for (var item in selectedItems) {
       var product = item['product'];
       var quantity = item['quantity'];
       subtotal += product.priceAsDouble * quantity;
     }
-    double total = subtotal;
+
+    discount = calculateDiscount(subtotal, coupon);
+    double total = subtotal - discount;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.white,
         forceMaterialTransparency: true,
         title: const Text(
@@ -266,9 +292,7 @@ class _OrdersCartState extends State<OrdersCart> {
     return SafeArea(
       bottom: true,
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10,),
         color: Colors.white,
         child: Row(
           children: [
@@ -326,31 +350,59 @@ class _OrdersCartState extends State<OrdersCart> {
                   shape: RoundedRectangleBorder(),
                 ),
                 onPressed: () async {
-                  setState(() => isLoading = true);
+                  if (location.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please enter your delivery location.'),
+                      ),
+                    );
+                    return;
+                  }
 
-                  List<int> orderedIndexes = [];
+                  if (number.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please enter your contact number.'),
+                      ),
+                    );
+                    return;
+                  }
+
+                  setState(() => isLoading = true);
+                  final orderId =
+                      DateTime.now().millisecondsSinceEpoch.toString();
+                  List<OrderItem> orderItems = [];
 
                   for (var item in selectedItems) {
                     var product = item['product'];
                     var quantity = item['quantity'];
 
-                    final newOrder = Order(
-                      id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      status: "PROCESS",
-                      datetime: DateTime.now(),
-                      image: product.image,
+                    final orderItem = OrderItem(
+                      orderId: orderId,
                       name: product.name,
-                      price: product.priceAsDouble * quantity,
+                      price: product.priceAsDouble,
+                      image: product.image,
+                      quantity: quantity,
                     );
-
-                    await DatabaseHelper().saveOrder(newOrder);
-                    orders.add(newOrder);
-
-                    orderedIndexes.add(item['index']);
+                    orderItems.add(orderItem);
+                    totalPrice += product.priceAsDouble * quantity;
                   }
+
+                  final newOrder = Order(
+                    id: orderId,
+                    status: "PROCESSING",
+                    datetime: DateTime.now(),
+                    items: orderItems,
+                  );
+
+                  await DatabaseHelper().saveOrder(newOrder);
+                  orders.add(newOrder);
 
                   var removeOrderedItems = arguments['removeOrderedItems'];
                   if (removeOrderedItems != null) {
+                    List<int> orderedIndexes = selectedItems
+                        .map<int>((item) => item['index'] as int)
+                        .toList();
                     removeOrderedItems(orderedIndexes);
                   }
 
@@ -372,16 +424,9 @@ class _OrdersCartState extends State<OrdersCart> {
                 ),
                 onPressed: () async {
                   if (orders.isNotEmpty) {
-                    final lastOrder = orders.last.copyWith(status: "COMPLETED");
-
-                    await DatabaseHelper().updateOrderStatus(
-                      lastOrder.id,
-                      "COMPLETED",
-                    );
-
                     setState(() {
                       isMarkReciver = false;
-                      orders[orders.length - 1] = lastOrder;
+                      orders[orders.length - 1];
                     });
                   }
                 },
@@ -408,6 +453,17 @@ class _OrdersCartState extends State<OrdersCart> {
         ),
       ),
     );
+  }
+
+  double calculateDiscount(double subtotal, String couponCode) {
+    var selectedCoupon = coupons.firstWhere(
+      (c) => c['code'] == couponCode,
+      orElse: () => {},
+    );
+    if (selectedCoupon.isNotEmpty) {
+      return subtotal * (selectedCoupon['value'] / 100);
+    }
+    return 0.0;
   }
 
   Widget _buildDeliveryLocation() {

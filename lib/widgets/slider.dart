@@ -1,5 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:ecommerc_app/data/slide.dart';
+import 'package:ecommerc_app/data/data_source/slide.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:shimmer/shimmer.dart';

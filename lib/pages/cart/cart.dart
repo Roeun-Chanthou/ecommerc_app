@@ -1,5 +1,5 @@
-import 'package:ecommerc_app/helpers/cart_helper.dart';
-import 'package:ecommerc_app/models/product_model.dart';
+import 'package:ecommerc_app/data/models/product_model.dart';
+import 'package:ecommerc_app/data/network/helpers/cart_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
@@ -76,22 +76,6 @@ class _CartState extends State<Cart> {
     cartService.saveCart(serializedCart);
   }
 
-  // void _removeSelectedItems() {
-  //   setState(() {
-  //     cart = cart
-  //         .where((item) => !selectedIndexes.contains(cart.indexOf(item)))
-  //         .toList();
-  //     selectedIndexes.clear();
-  //     _updateTotal();
-  //   });
-  //   _saveCart();
-  //   IconSnackBar.show(
-  //     context,
-  //     snackBarType: SnackBarType.fail,
-  //     label: 'Remove from cart',
-  //   );
-  // }
-
   void _removeSelectedItems() {
     setState(() {
       List<int> sortedIndexes = selectedIndexes.toList()..sort((a, b) => b - a);
@@ -153,25 +137,6 @@ class _CartState extends State<Cart> {
     _saveCart();
   }
 
-  // void _navigateToOrders() {
-  //   List<Map<String, dynamic>> selectedItems = selectedIndexes.map((index) {
-  //     var cartItem = cart[index];
-  //     return {
-  //       'product': cartItem['product'],
-  //       'quantity': cartItem['quantity'],
-  //       'color': cartItem['color'],
-  //     };
-  //   }).toList();
-
-  //   Navigator.pushNamed(
-  //     context,
-  //     Routes.ordercart,
-  //     arguments: {
-  //       'selectedItems': selectedItems,
-  //     },
-  //   );
-  // }
-
   void _navigateToOrders() {
     List<Map<String, dynamic>> selectedItems = selectedIndexes.map((index) {
       var cartItem = cart[index];
@@ -216,6 +181,7 @@ class _CartState extends State<Cart> {
         forceMaterialTransparency: true,
         backgroundColor: Colors.white,
         title: const Text("Cart"),
+        centerTitle: true,
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -443,49 +409,6 @@ class _CartState extends State<Cart> {
     );
   }
 
-  // Widget _buildBottomPlace(double total) {
-  //   return Container(
-  //     color: Colors.white,
-  //     padding: const EdgeInsets.only(left: 20, right: 20, bottom: 30),
-  //     child: Row(
-  //       crossAxisAlignment: CrossAxisAlignment.center,
-  //       children: [
-  //         Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             Text(
-  //               "USD \$${total.toStringAsFixed(2)}",
-  //               style:
-  //                   const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-  //             ),
-  //             Text(
-  //               "${selectedIndexes.length} items",
-  //               style: const TextStyle(
-  //                 fontSize: 15,
-  //                 color: Colors.grey,
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //         const Spacer(),
-  //         ElevatedButton(
-  //           style: ElevatedButton.styleFrom(
-  //             backgroundColor: Colors.black,
-  //             foregroundColor: Colors.white,
-  //             shape: const RoundedRectangleBorder(),
-  //             minimumSize: Size(screenWidth * 0.3, screenHeight * 0.055),
-  //           ),
-  //           onPressed: selectedIndexes.isNotEmpty ? _navigateToOrders : null,
-  //           child: const Text(
-  //             "CHECKOUT",
-  //             style: TextStyle(fontSize: 16),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   Widget _buildBottomPlace(double total) {
     List<String> selectedImages = selectedIndexes.map((index) {
       return (cart[index]['product'] as ProductModel).image;
@@ -525,39 +448,49 @@ class _CartState extends State<Cart> {
               ),
             ),
           const SizedBox(height: 10),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "USD \$${total.toStringAsFixed(2)}",
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w700),
-                  ),
-                  Text(
-                    "${selectedIndexes.length} items selected",
-                    style: const TextStyle(fontSize: 15, color: Colors.grey),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  shape: const RoundedRectangleBorder(),
-                  minimumSize: Size(screenWidth * 0.3, screenHeight * 0.055),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: 10,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "USD \$${total.toStringAsFixed(2)}",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      "${selectedIndexes.length} items selected",
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
                 ),
-                onPressed:
-                    selectedIndexes.isNotEmpty ? _navigateToOrders : null,
-                child: const Text(
-                  "CHECKOUT",
-                  style: TextStyle(fontSize: 16),
+                const Spacer(),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    shape: const RoundedRectangleBorder(),
+                    minimumSize: Size(screenWidth * 0.3, screenHeight * 0.055),
+                  ),
+                  onPressed:
+                      selectedIndexes.isNotEmpty ? _navigateToOrders : null,
+                  child: const Text(
+                    "CHECKOUT",
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

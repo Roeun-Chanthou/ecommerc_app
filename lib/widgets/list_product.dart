@@ -1,8 +1,8 @@
-import 'package:ecommerc_app/models/product_type.dart';
+import 'package:ecommerc_app/data/models/product_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../data/product_type.dart';
+import '../data/data_source/product_type.dart';
 
 class ListProduct extends StatelessWidget {
   const ListProduct({super.key});

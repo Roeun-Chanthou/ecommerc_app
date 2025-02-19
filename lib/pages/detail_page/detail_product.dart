@@ -1,14 +1,14 @@
 import 'package:add_to_cart_animation/add_to_cart_animation.dart';
-import 'package:ecommerc_app/helpers/cart_helper.dart';
-import 'package:ecommerc_app/helpers/favorite_helper.dart';
-import 'package:ecommerc_app/models/product_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecommerc_app/data/models/product_model.dart';
+import 'package:ecommerc_app/data/network/helpers/cart_helper.dart';
+import 'package:ecommerc_app/data/network/helpers/favorite_helper.dart';
 import 'package:ecommerc_app/routes/routes.dart';
 import 'package:ecommerc_app/widgets/space_height.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 class DetailProduct extends StatefulWidget {
   const DetailProduct({super.key});
@@ -112,6 +112,7 @@ class _DetailProductState extends State<DetailProduct> {
           forceMaterialTransparency: true,
           backgroundColor: Colors.white,
           title: const Text("Detail Product"),
+          centerTitle: true,
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 16),
@@ -214,11 +215,22 @@ class _DetailProductState extends State<DetailProduct> {
                         tag: productDS.image,
                         child: Padding(
                           padding: const EdgeInsets.all(50.0),
-                          child: Image.network(
-                            loadingBuilder: _buildLoadingShimmer,
-                            "http:${productDS.image}",
-                            fit: BoxFit.contain,
+                          child: CachedNetworkImage(
+                            imageUrl: "http:${productDS.image}",
+                            placeholder: (context, url) => Center(
+                              child: const CircularProgressIndicator(
+                                backgroundColor: Colors.white,
+                                color: Colors.red,
+                              ),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
                           ),
+                          // Image.network(
+                          //   loadingBuilder: _buildLoadingShimmer,
+                          //   "http:${productDS.image}",
+                          //   fit: BoxFit.contain,
+                          // ),
                         ),
                       ),
                     ),
@@ -413,22 +425,22 @@ class _DetailProductState extends State<DetailProduct> {
     );
   }
 
-  Widget _buildLoadingShimmer(
-      BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-    if (loadingProgress == null) return child;
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
-      child: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          borderRadius: BorderRadius.circular(20),
-        ),
-      ),
-    );
-  }
+  // Widget _buildLoadingShimmer(
+  //     BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+  //   if (loadingProgress == null) return child;
+  //   return Shimmer.fromColors(
+  //     baseColor: Colors.grey.shade300,
+  //     highlightColor: Colors.grey.shade100,
+  //     child: Container(
+  //       width: double.infinity,
+  //       height: double.infinity,
+  //       decoration: BoxDecoration(
+  //         color: Colors.grey[300],
+  //         borderRadius: BorderRadius.circular(20),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildDescriptionSection(ProductModel productDS) {
     return Container(

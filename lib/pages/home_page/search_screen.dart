@@ -1,11 +1,12 @@
-import 'package:ecommerc_app/models/product_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecommerc_app/data/models/product_model.dart';
 import 'package:ecommerc_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../data/product_model.dart';
+import '../../data/data_source/product_model.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -218,12 +219,19 @@ class _SearchScreenState extends State<SearchScreen> {
                                 children: [
                                   Hero(
                                     tag: productFiltered.image,
-                                    child: Image.network(
-                                      loadingBuilder: _buildLoadingShimmer,
-                                      "http:${productFiltered.image}",
+                                    child: CachedNetworkImage(
+                                      imageUrl: "http:${productFiltered.image}",
                                       height: 100,
                                       width: 100,
                                       fit: BoxFit.contain,
+                                      placeholder: (context, url) => Center(
+                                        child: const CircularProgressIndicator(
+                                          backgroundColor: Colors.white,
+                                          color: Colors.red,
+                                        ),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Icon(Icons.error),
                                     ),
                                   ),
                                   const SizedBox(width: 10),
@@ -325,21 +333,4 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
     );
   }
-}
-
-Widget _buildLoadingShimmer(
-    BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-  if (loadingProgress == null) return child;
-  return Shimmer.fromColors(
-    baseColor: Colors.grey.shade300,
-    highlightColor: Colors.grey.shade100,
-    child: Container(
-      width: 100,
-      height: 100,
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(20),
-      ),
-    ),
-  );
 }

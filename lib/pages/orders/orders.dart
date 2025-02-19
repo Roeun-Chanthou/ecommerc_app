@@ -1,10 +1,16 @@
-import 'package:ecommerc_app/data/coupons_code.dart';
-import 'package:ecommerc_app/models/product_model.dart';
+import 'package:ecommerc_app/data/data_source/coupons_code.dart';
+import 'package:ecommerc_app/data/models/product_model.dart';
 import 'package:ecommerc_app/pages/orders/widgets/modal_contact.dart';
 import 'package:ecommerc_app/pages/orders/widgets/modal_coupon.dart';
 import 'package:ecommerc_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
+
+import '../../data/network/database/login_helper.dart';
+import '../../data/network/helpers/order_helper2.dart';
 
 class Orders extends StatefulWidget {
   const Orders({super.key});
@@ -16,6 +22,115 @@ class Orders extends StatefulWidget {
 class _OrdersState extends State<Orders> {
   late double screenWidth;
   late double screenHeight;
+
+  @override
+  void initState() {
+    getUserID();
+    super.initState();
+  }
+
+  bool isOrder = true;
+  bool isMarkReciver = false;
+  bool isLoading = false;
+  int userID = 0;
+  void getUserID() async {
+    var pref = await SharedPreferences.getInstance();
+    var username = pref.getString('username') ?? '';
+
+    var data = await LoginDatabaseHelper.getUserDetails(username);
+
+    setState(() {
+      userID = data['id'] ?? 0;
+      print(data['id']);
+    });
+  }
+
+  Future<void> saveOrder(
+      ProductModel product, String colornameProduct, double total) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      print('Attempting to save order:');
+      print('Product: ${product.name}');
+      print('Price: ${product.priceAsDouble}');
+      print('Quantity: $itemCount');
+
+      final orderId = DateTime.now().millisecondsSinceEpoch.toString();
+      print('Generated Order ID: $orderId');
+
+      final orderItem = OrderItem(
+        orderId: orderId,
+        name: product.name,
+        price: double.tryParse(product.price.toString()) ?? 0.0,
+        image: product.image.startsWith('http')
+            ? product.image
+            : "http:${product.image}",
+        quantity: itemCount,
+      );
+
+      print('Created OrderItem: ${orderItem.toMap()}');
+
+      final order = OrderSingle(
+        id: orderId,
+        status: "PROCESSING",
+        datetime: DateTime.now(),
+        items: [orderItem],
+      );
+
+      print('Created OrderSingle: ${order.toMap()}');
+
+      final db = await OrderDatabaseHelper.database;
+
+      await db.transaction((txn) async {
+        print('Saving order to database...');
+        final orderResult = await txn.insert(
+          'orders',
+          order.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+        print('Order save result: $orderResult');
+
+        print('Saving order item to database...');
+        final itemResult = await txn.insert(
+          'order_items',
+          orderItem.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+        print('Item save result: $itemResult');
+      });
+
+      print('Order saved successfully!');
+
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.mainScreen,
+          (route) => false,
+        );
+      }
+    } catch (e, stackTrace) {
+      print('Error saving order: $e');
+      print('Stack trace: $stackTrace');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error saving order: ${e.toString()}'),
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  String formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.now());
+
   int itemCount = 1;
   var number = '';
   String coupon = '';
@@ -39,6 +154,7 @@ class _OrdersState extends State<Orders> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.white,
         title: const Text(
           "Orders",
@@ -275,31 +391,85 @@ class _OrdersState extends State<Orders> {
   }
 
   Widget _buildBottomPlace(double total) {
-    return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 30),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            "USD \$${total.toStringAsFixed(2)}",
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-          ),
-          const Spacer(),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-              foregroundColor: Colors.white,
-              shape: const RoundedRectangleBorder(),
-              minimumSize: Size(screenWidth * 0.3, screenHeight * 0.055),
+    return SafeArea(
+      bottom: true,
+      child: Container(
+        color: Colors.white,
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "USD \$${total.toStringAsFixed(2)}",
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
             ),
-            onPressed: () {},
-            child: const Text(
-              "PLACE ORDER",
-              style: TextStyle(fontSize: 16),
+            const Spacer(),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                shape: const RoundedRectangleBorder(),
+                minimumSize: Size(screenWidth * 0.3, screenHeight * 0.055),
+              ),
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      try {
+                        if (location.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please enter delivery location'),
+                            ),
+                          );
+                          return;
+                        }
+                        if (number.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please enter contact number'),
+                            ),
+                          );
+                          return;
+                        }
+                        final arguments =
+                            ModalRoute.of(context)?.settings.arguments;
+                        if (arguments == null) {
+                          throw Exception('No product data provided');
+                        }
+
+                        final Map<String, dynamic> args =
+                            arguments as Map<String, dynamic>;
+                        final product = args['product'] as ProductModel;
+                        final colornameProduct = args['color'] as String;
+
+                        print('Starting order save process...');
+                        await saveOrder(product, colornameProduct, total);
+                      } catch (e) {
+                        print('Error in order button press: $e');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text('Error processing order: ${e.toString()}'),
+                          ),
+                        );
+                      }
+                    },
+              child: isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      "PLACE ORDER",
+                      style: TextStyle(fontSize: 16),
+                    ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

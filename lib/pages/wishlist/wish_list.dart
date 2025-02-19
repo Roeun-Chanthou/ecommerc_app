@@ -1,10 +1,10 @@
-import 'package:ecommerc_app/helpers/favorite_helper.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecommerc_app/data/network/helpers/favorite_helper.dart';
 import 'package:ecommerc_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 class WishListScreen extends StatelessWidget {
   const WishListScreen({super.key});
@@ -164,13 +164,24 @@ class WishListScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Center(
-                            child: Image.network(
-                              loadingBuilder: _buildLoadingShimmer,
-                              "http:${product.image}",
-                              width: 180,
-                              height: 180,
-                              fit: BoxFit.contain,
+                            child: CachedNetworkImage(
+                              imageUrl: "http:${product.image}",
+                              placeholder: (context, url) => Center(
+                                child: const CircularProgressIndicator(
+                                  backgroundColor: Colors.white,
+                                  color: Colors.red,
+                                ),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
                             ),
+                            // Image.network(
+                            //   loadingBuilder: _buildLoadingShimmer,
+                            //   "http:${product.image}",
+                            //   width: 180,
+                            //   height: 180,
+                            //   fit: BoxFit.contain,
+                            // ),
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -196,21 +207,20 @@ class WishListScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLoadingShimmer(
-      BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-    if (loadingProgress == null) return child;
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
-      child: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          borderRadius: BorderRadius.circular(20),
-        ),
-      ),
-    );
-  }
+  // Widget _buildLoadingShimmer(
+  //     BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+  //   if (loadingProgress == null) return child;
+  //   return Shimmer.fromColors(
+  //     baseColor: Colors.grey.shade300,
+  //     highlightColor: Colors.grey.shade100,
+  //     child: Container(
+  //       width: double.infinity,
+  //       height: double.infinity,
+  //       decoration: BoxDecoration(
+  //         color: Colors.grey[300],
+  //         borderRadius: BorderRadius.circular(20),
+  //       ),
+  //     ),
+  //   );
+  // }
 }
-

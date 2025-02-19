@@ -3,7 +3,7 @@ import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_icon_snackbar/flutter_icon_snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../database/login_helper.dart';
+import '../../data/network/database/login_helper.dart';
 import '../../routes/routes.dart';
 
 class Login extends StatefulWidget {

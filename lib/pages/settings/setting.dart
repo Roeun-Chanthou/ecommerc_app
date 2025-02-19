@@ -1,6 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:ecommerc_app/database/login_helper.dart';
-import 'package:ecommerc_app/pages/order_proudct/my_order.dart';
+import 'package:ecommerc_app/data/network/database/login_helper.dart';
+import 'package:ecommerc_app/pages/orders/combine.dart';
 import 'package:ecommerc_app/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
@@ -66,7 +66,7 @@ class _SettingState extends State<Setting> {
         color: Colors.black,
         fontWeight: FontWeight.normal,
       ),
-      autoHide: const Duration(seconds: 5),
+      autoHide: const Duration(seconds: 3),
     ).show();
   }
 
@@ -176,7 +176,7 @@ class _SettingState extends State<Setting> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MyOrder(),
+                    builder: (context) => MyOrdersCombined(),
                     fullscreenDialog: true,
                   ),
                 );
@@ -202,18 +202,6 @@ class _SettingState extends State<Setting> {
               title: "Privacy Policy",
             ),
             const SizedBox(height: 20),
-            // Bounceable(
-            //   onTap: () {
-            //     Navigator.pushNamed(
-            //       context,
-            //       Routes.darkMode,
-            //     );
-            //   },
-            //   child: _buildListTitle(
-            //     image: "assets/dark-mode-alt-2.svg",
-            //     title: "Dark Theme",
-            //   ),
-            // ),
             Bounceable(
               onTap: _logout,
               child: _buildListTitle(

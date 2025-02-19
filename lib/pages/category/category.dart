@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../models/product_model.dart';
+import '../../data/models/product_model.dart';
 import '../../routes/routes.dart';
 
 class Category extends StatelessWidget {
@@ -16,6 +16,7 @@ class Category extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        centerTitle: true,
         forceMaterialTransparency: true,
         backgroundColor: Colors.white,
         title: const Text("Product Category"),

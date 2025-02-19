@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:ecommerc_app/data/product_model.dart';
-import 'package:ecommerc_app/models/product_model.dart';
+import 'package:ecommerc_app/data/data_source/product_model.dart';
+import 'package:ecommerc_app/data/models/product_model.dart';
 import 'package:ecommerc_app/routes/routes.dart';
 import 'package:ecommerc_app/widgets/slider.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +8,8 @@ import 'package:flutter_bounceable/flutter_bounceable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../data/product_type.dart';
-import '../../models/product_type.dart';
+import '../../data/data_source/product_type.dart';
+import '../../data/models/product_type.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({super.key});
@@ -309,18 +309,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                   tag: product.image,
                                   child: CachedNetworkImage(
                                     imageUrl: "http:${product.image}",
-                                    placeholder: (context, url) =>
-                                        CircularProgressIndicator(),
+                                    placeholder: (context, url) => Center(
+                                      child: const CircularProgressIndicator(
+                                        backgroundColor: Colors.white,
+                                        color: Colors.red,
+                                      ),
+                                    ),
                                     errorWidget: (context, url, error) =>
                                         Icon(Icons.error),
                                   ),
-                                  // Image(
-                                  //   loadingBuilder: _buildLoadingShimmer,
-                                  //   image: NetworkImage(
-                                  //     "http:${product.image}",
-                                  //   ),
-                                  //   fit: BoxFit.contain,
-                                  // ),
                                 ),
                               ),
                             ),
@@ -381,20 +378,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildLoadingShimmer(
-      BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-    if (loadingProgress == null) return child;
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
-      child: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(20),
-        ),
-      ),
-    );
-  }
+  // Widget _buildLoadingShimmer(
+  //     BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+  //   if (loadingProgress == null) return child;
+  //   return Shimmer.fromColors(
+  //     baseColor: Colors.grey.shade300,
+  //     highlightColor: Colors.grey.shade100,
+  //     child: Container(
+  //       width: double.infinity,
+  //       height: double.infinity,
+  //       decoration: BoxDecoration(
+  //         color: Colors.grey.shade300,
+  //         borderRadius: BorderRadius.circular(20),
+  //       ),
+  //     ),
+  //   );
+  // }
 }
