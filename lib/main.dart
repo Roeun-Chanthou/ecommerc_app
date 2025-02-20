@@ -5,7 +5,6 @@ import 'package:ecommerc_app/pages/location/location_delivery.dart';
 import 'package:ecommerc_app/pages/login/login.dart';
 import 'package:ecommerc_app/pages/login/register.dart';
 import 'package:ecommerc_app/pages/main_page/main_page.dart';
-import 'package:ecommerc_app/pages/orders/my_order2.dart';
 import 'package:ecommerc_app/pages/splash_screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -77,7 +76,7 @@ class _MyAppState extends State<MyApp> {
         Routes.ordercart: (context) => const OrdersCart(),
         Routes.myorder: (context) => MyOrder(),
         Routes.register: (context) => Register(),
-        Routes.order2: (context) => MyOrder2(),
+        // Routes.order2: (context) => MyOrder2(),
       },
     );
   }

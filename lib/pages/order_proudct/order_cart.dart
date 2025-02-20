@@ -292,7 +292,10 @@ class _OrdersCartState extends State<OrdersCart> {
     return SafeArea(
       bottom: true,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10,),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 10,
+        ),
         color: Colors.white,
         child: Row(
           children: [
@@ -393,6 +396,7 @@ class _OrdersCartState extends State<OrdersCart> {
                     status: "PROCESSING",
                     datetime: DateTime.now(),
                     items: orderItems,
+                    userId: userID, // Add this line
                   );
 
                   await DatabaseHelper().saveOrder(newOrder);
@@ -415,11 +419,12 @@ class _OrdersCartState extends State<OrdersCart> {
                 child: const Text("PLACE ORDER"),
               )
             else if (isMarkReciver)
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.black,
-                  side: const BorderSide(color: Colors.black, width: 2),
-                  minimumSize: const Size(200, 40),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.yellow.shade800,
+                  // side: const BorderSide(color: Colors.black, width: 2),
+                  minimumSize: const Size(200, 50),
                   shape: RoundedRectangleBorder(),
                 ),
                 onPressed: () async {
@@ -437,7 +442,7 @@ class _OrdersCartState extends State<OrdersCart> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
-                  minimumSize: const Size(200, 40),
+                  minimumSize: const Size(200, 50),
                   shape: RoundedRectangleBorder(),
                 ),
                 onPressed: () {
