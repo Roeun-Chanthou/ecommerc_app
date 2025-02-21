@@ -76,7 +76,6 @@ class _MyAppState extends State<MyApp> {
         Routes.ordercart: (context) => const OrdersCart(),
         Routes.myorder: (context) => MyOrder(),
         Routes.register: (context) => Register(),
-        // Routes.order2: (context) => MyOrder2(),
       },
     );
   }

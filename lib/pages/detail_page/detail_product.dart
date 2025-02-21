@@ -425,23 +425,6 @@ class _DetailProductState extends State<DetailProduct> {
     );
   }
 
-  // Widget _buildLoadingShimmer(
-  //     BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-  //   if (loadingProgress == null) return child;
-  //   return Shimmer.fromColors(
-  //     baseColor: Colors.grey.shade300,
-  //     highlightColor: Colors.grey.shade100,
-  //     child: Container(
-  //       width: double.infinity,
-  //       height: double.infinity,
-  //       decoration: BoxDecoration(
-  //         color: Colors.grey[300],
-  //         borderRadius: BorderRadius.circular(20),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _buildDescriptionSection(ProductModel productDS) {
     return Container(
       width: screenWidth,
@@ -478,10 +461,6 @@ class _DetailProductState extends State<DetailProduct> {
               minimumSize: Size(screenWidth * 0.55, 40),
             ),
             onPressed: () {
-              // addToCart(productDS, colornameProduct);
-              // setState(() {
-              //   itemCount++;
-              // });
               addToCartWithAnimation(
                   imageGlobalKey, productDS, colornameProduct);
             },

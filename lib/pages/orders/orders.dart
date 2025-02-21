@@ -487,13 +487,10 @@ class _OrdersState extends State<Orders> {
                           );
                           return;
                         }
-                        // Save the order
                         await saveOrder(product, colornameProduct, total);
-
-                        // Update state to show the confirmation message
                         setState(() {
-                          isMarkReciver = true; // Show the confirmation message
-                          isOrderPlaced = true; // Disable further interactions
+                          isMarkReciver = true;
+                          isOrderPlaced = true;
                         });
                       } catch (e) {
                         print('Error in order button press: $e');
